@@ -61,24 +61,30 @@ const MOSAIC: [string, string][] = [
   ['img/lattice.jpg', ''], ['img/taipa.jpg', ''], ['img/felicidade-night.jpg', 'alt_felicidade'],
   ['img/coloane.jpg', ''], ['img/guia.jpg', ''], ['img/cunha.jpg', 'alt_cunha']
 ];
-/** Sets the city's name vertically and sizes it to the photo stage: about 90% of its height (and of the window's, so the whole word fits on one screen), never wider than 42% of it. */
+/** Sets the city's name vertically, sized to the photo stage (about 90% of its height, at most 42% of its width),
+ *  and places it so it overlaps the left edge of the photographs. Both follow the stage, never the window directly. */
 function useVerticalFit(stage: React.RefObject<HTMLDivElement | null>, name: React.RefObject<HTMLHeadingElement | null>, key: string) {
   useLayoutEffect(() => {
     const st = stage.current, el = name.current; if (!st || !el) return;
+    const mosaic = st.querySelector<HTMLElement>('[data-mosaic]');
     const fit = () => {
       el.style.fontSize = '100px';
-      const r = el.getBoundingClientRect();
-      if (!r.height || !r.width) return;
-      const room = Math.min(st.clientHeight * 0.9, window.innerHeight * 0.85);
-      const scale = Math.min(room / r.height, (st.clientWidth * 0.42) / r.width);
-      el.style.fontSize = Math.max(48, Math.min(560, 100 * scale)) + 'px';
+      const w100 = el.offsetWidth, h100 = el.offsetHeight; // layout sizes, unaffected by transforms or animation
+      if (!w100 || !h100) return;
+      const scale = Math.min((st.clientHeight * 0.9) / h100, (st.clientWidth * 0.42) / w100);
+      const size = Math.max(48, Math.min(560, 100 * scale));
+      el.style.fontSize = size + 'px';
+      if (mosaic) {
+        const nameW = (w100 * size) / 100;
+        el.style.left = Math.max(0, mosaic.offsetLeft - nameW * 0.6) + 'px'; // never past the page margin
+      }
     };
     fit();
     const ro = new ResizeObserver(fit);
     ro.observe(st);
-    window.addEventListener('resize', fit);
+    if (mosaic) ro.observe(mosaic);
     document.fonts?.ready.then(fit);
-    return () => { ro.disconnect(); window.removeEventListener('resize', fit); };
+    return () => ro.disconnect();
   }, [stage, name, key]);
 }
 

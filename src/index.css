@@ -105,7 +105,9 @@
   .display { font-family: var(--display); font-weight: 600; font-size: var(--fs-display); line-height: 0.9; letter-spacing: -0.045em; text-wrap: balance; }
   .title { font-family: var(--display); font-weight: 600; font-size: var(--fs-title); line-height: 1; letter-spacing: -0.035em; text-wrap: balance; }
   html[lang="zh-Hant"] .display, html[lang="zh-Hant"] .title { font-family: var(--cjk); font-weight: 900; letter-spacing: 0.02em; line-height: 1.15; font-feature-settings: "palt"; }
-  html[lang="zh-Hant"] .display { font-size: calc(var(--fs-display) * 0.78); }
+  /* Chinese glyphs fill a full square, so about 86% of the Latin size reads as the same size; titles stay closer (90%) */
+  html[lang="zh-Hant"] .display { font-size: calc(var(--fs-display) * 0.86); }
+  html[lang="zh-Hant"] .title { font-size: calc(var(--fs-title) * 0.9); }
   .lede { font-size: var(--fs-lede); line-height: 1.45; max-width: 40ch; }
   .small { font-size: var(--fs-small); }
   .echo:lang(zh-Hant) { font-family: var(--cjk); font-weight: 700; letter-spacing: 0.04em; }
@@ -190,14 +192,15 @@
 
   /* 2. Statement that fills as you read */
   .statement p.big { font-family: var(--display); font-weight: 500; font-size: clamp(24px, 2.5vw, 36px); line-height: 1.25; letter-spacing: -0.02em; max-width: 30em; }
-  html[lang="zh-Hant"] .statement p.big { font-family: var(--cjk); font-weight: 700; font-size: clamp(22px, 2.2vw, 32px); line-height: 1.6; letter-spacing: 0.02em; }
+  html[lang="zh-Hant"] .statement p.big { font-family: var(--cjk); font-weight: 700; font-size: clamp(22px, 2.3vw, 33px); line-height: 1.6; letter-spacing: 0.02em; }
   .statement .w { color: var(--ink); }
   .statement .echo-line { margin-top: 32px; color: var(--grey); }
 
   /* 3. Macao: the name set huge over its photographs */
   .macao { overflow: hidden; padding-top: clamp(48px, 6vw, 96px); }
   .mosaic-stage { position: relative; min-height: min(100svh, 1000px); display: grid; align-items: center; }
-  .mosaic { margin-left: auto; width: min(68%, 980px); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  /* The grid is sized by the window height as well as its width, so the photographs and the name always fit one screen together */
+  .mosaic { margin-inline: auto; width: min(68%, clamp(280px, calc((100svh - 140px) * 0.78), 980px)); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
   .mosaic img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 10px; }
   .mosaic img:nth-child(3n+2) { transform: translateY(48px); }
   /* The city's name runs vertically in every language (Chinese upright, Latin turned like a book spine); script sets its size to the stage */
@@ -305,14 +308,14 @@
     .stage.flip .photo { order: 0; }
     .options { grid-template-columns: minmax(0, 1fr); }
     .team-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .mosaic { width: 78%; }
+    .mosaic { width: min(78%, clamp(280px, calc((100svh - 140px) * 0.78), 980px)); }
   }
   @media (max-width: 640px) {
     .projects-grid { grid-template-columns: minmax(0, 1fr); }
     .credits { grid-template-columns: minmax(0, 1fr); }
     .hero .logo { height: 34px; }
     .mosaic-stage { min-height: 0; padding: 24px 0 40px; }
-    .mosaic { width: 86%; gap: 6px; }
+    .mosaic { width: 86%; gap: 6px; margin-right: 0; }
     .mosaic img:nth-child(3n+2) { transform: translateY(28px); }
     .langs button { min-width: 36px; padding: 0 8px; }
     .menu-btn .lbl { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
