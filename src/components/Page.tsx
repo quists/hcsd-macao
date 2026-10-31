@@ -61,30 +61,38 @@ const MOSAIC: [string, string][] = [
   ['img/lattice.jpg', ''], ['img/taipa.jpg', ''], ['img/felicidade-night.jpg', 'alt_felicidade'],
   ['img/coloane.jpg', ''], ['img/guia.jpg', ''], ['img/cunha.jpg', 'alt_cunha']
 ];
-/** Sets the city's name vertically, sized to the photo stage (about 90% of its height, at most 42% of its width),
- *  and places it so it overlaps the left edge of the photographs. Both follow the stage, never the window directly. */
+/** Sets the city's name vertically and pins it mid-screen beside the photographs: 84% of the screen's height
+ *  (never taller than the photographs, at most 42% of the section's width), overlapping their left edge by 40% of its width. */
 function useVerticalFit(stage: React.RefObject<HTMLDivElement | null>, name: React.RefObject<HTMLHeadingElement | null>, key: string) {
   useLayoutEffect(() => {
     const st = stage.current, el = name.current; if (!st || !el) return;
     const mosaic = st.querySelector<HTMLElement>('[data-mosaic]');
+    const apply = (size: number, w100: number, h100: number, screenH: number) => {
+      el.style.fontSize = size + 'px';
+      el.style.top = Math.max(0, (screenH - (h100 * size) / 100) / 2) + 'px'; // centred while pinned
+      el.style.marginRight = -((w100 * size) / 100) * 0.4 + 'px'; // overlaps the photographs
+    };
     const fit = () => {
       el.style.fontSize = '100px';
       const w100 = el.offsetWidth, h100 = el.offsetHeight; // layout sizes, unaffected by transforms or animation
       if (!w100 || !h100) return;
-      const scale = Math.min((st.clientHeight * 0.9) / h100, (st.clientWidth * 0.42) / w100);
-      const size = Math.max(48, Math.min(560, 100 * scale));
-      el.style.fontSize = size + 'px';
-      if (mosaic) {
-        const nameW = (w100 * size) / 100;
-        el.style.left = Math.max(0, mosaic.offsetLeft - nameW * 0.6) + 'px'; // never past the page margin
+      const screenH = document.documentElement.clientHeight;
+      let size = Math.max(48, Math.min(560, 100 * Math.min((screenH * 0.84) / h100, (st.clientWidth * 0.42) / w100)));
+      apply(size, w100, h100, screenH);
+      // Where the photographs are shorter than the screen (phones), the name keeps to their height.
+      const photosH = mosaic?.offsetHeight || 0;
+      if (photosH && (h100 * size) / 100 > photosH * 0.96) {
+        size = Math.max(48, (photosH * 0.96 * 100) / h100);
+        apply(size, w100, h100, screenH);
       }
     };
     fit();
-    const ro = new ResizeObserver(fit);
+    let lastW = st.clientWidth;
+    const ro = new ResizeObserver(() => { if (st.clientWidth !== lastW) { lastW = st.clientWidth; fit(); } }); // width only, so the name and the grid never chase each other
     ro.observe(st);
-    if (mosaic) ro.observe(mosaic);
+    window.addEventListener('resize', fit);
     document.fonts?.ready.then(fit);
-    return () => ro.disconnect();
+    return () => { ro.disconnect(); window.removeEventListener('resize', fit); };
   }, [stage, name, key]);
 }
 
