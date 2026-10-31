@@ -199,9 +199,10 @@
   .mosaic { margin-left: auto; width: min(68%, 980px); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
   .mosaic img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 10px; }
   .mosaic img:nth-child(3n+2) { transform: translateY(48px); }
-  .bigname { position: absolute; letter-spacing: 0; z-index: 2; left: calc(var(--gutter) - 0.06em); top: 50%; transform: translateY(-46%); margin: 0; font: 900 clamp(150px, 29vw, 440px)/0.96 var(--cjk); color: #F2EFE9; pointer-events: none; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35), 0 10px 40px rgba(0, 0, 0, 0.45); } /* taste-skill-ignore: asked for, so the name reads over the photographs */
+  /* The city's name runs vertically in every language (Chinese upright, Latin turned like a book spine); script sets its size to the stage */
+  .bigname { position: absolute; z-index: 2; left: calc(var(--gutter) - 0.04em); top: 50%; transform: translateY(-50%); margin: 0; writing-mode: vertical-rl; text-orientation: mixed; white-space: nowrap; font: 900 200px/0.92 var(--cjk); letter-spacing: 0.02em; color: #F2EFE9; pointer-events: none; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35), 0 10px 40px rgba(0, 0, 0, 0.45); } /* taste-skill-ignore: asked for, so the name reads over the photographs */
   /* In English and Portuguese the name is set in Latin, one word across the photographs */
-  html:not([lang="zh-Hant"]) .bigname { font: 600 clamp(96px, 21vw, 340px)/0.85 var(--display); letter-spacing: -0.05em; }
+  html:not([lang="zh-Hant"]) .bigname { font-family: var(--display); font-weight: 600; line-height: 0.82; letter-spacing: -0.05em; }
   .macao .intro { margin-top: clamp(64px, 8vw, 120px); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px 64px; align-items: start; }
   .macao .intro h3 { grid-column: 1 / -1; max-width: 12em; }
   .macao .intro .text { color: var(--on-dark); }
@@ -312,7 +313,6 @@
     .mosaic-stage { min-height: 0; padding: 24px 0 40px; }
     .mosaic { width: 86%; gap: 6px; }
     .mosaic img:nth-child(3n+2) { transform: translateY(28px); }
-    .bigname { font-size: clamp(120px, 40vw, 220px); }
     .langs button { min-width: 36px; padding: 0 8px; }
     .menu-btn .lbl { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
     .menu-btn { padding: 0 13px; }

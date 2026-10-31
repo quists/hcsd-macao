@@ -1,4 +1,4 @@
-import { useRef, useState, type PointerEvent as RPointerEvent } from 'react';
+import { useLayoutEffect, useRef, useState, type PointerEvent as RPointerEvent } from 'react';
 import { ChevronsLeftRight } from 'lucide-react';
 import { Tx, useLang } from '@/i18n';
 import { CREDITS, L, TABS, TIMELINE } from '@/content';
@@ -61,8 +61,32 @@ const MOSAIC: [string, string][] = [
   ['img/lattice.jpg', ''], ['img/taipa.jpg', ''], ['img/felicidade-night.jpg', 'alt_felicidade'],
   ['img/coloane.jpg', ''], ['img/guia.jpg', ''], ['img/cunha.jpg', 'alt_cunha']
 ];
+/** Sets the city's name vertically and sizes it to the photo stage: about 90% of its height (and of the window's, so the whole word fits on one screen), never wider than 42% of it. */
+function useVerticalFit(stage: React.RefObject<HTMLDivElement | null>, name: React.RefObject<HTMLHeadingElement | null>, key: string) {
+  useLayoutEffect(() => {
+    const st = stage.current, el = name.current; if (!st || !el) return;
+    const fit = () => {
+      el.style.fontSize = '100px';
+      const r = el.getBoundingClientRect();
+      if (!r.height || !r.width) return;
+      const room = Math.min(st.clientHeight * 0.9, window.innerHeight * 0.85);
+      const scale = Math.min(room / r.height, (st.clientWidth * 0.42) / r.width);
+      el.style.fontSize = Math.max(48, Math.min(560, 100 * scale)) + 'px';
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(st);
+    window.addEventListener('resize', fit);
+    document.fonts?.ready.then(fit);
+    return () => { ro.disconnect(); window.removeEventListener('resize', fit); };
+  }, [stage, name, key]);
+}
+
 function Macao() {
   const { lang, tPlain } = useLang();
+  const stageRef = useRef<HTMLDivElement>(null);
+  const nameRef = useRef<HTMLHeadingElement>(null);
+  useVerticalFit(stageRef, nameRef, lang);
   const [pos, setPos] = useState(55);
   const year = Math.round(1844 + (182 * pos) / 100);
   const label = pos <= 1 ? '1844' : pos >= 99 ? tPlain('today') : String(year);
@@ -74,8 +98,8 @@ function Macao() {
   return (
     <section className="field field-night macao on-color" id="macao" aria-labelledby="macao-h">
       <div className="wrap">
-        <div className="mosaic-stage">
-          <h2 className="bigname">{lang === 'zh' ? <>澳<br />門</> : tPlain('bigname')}</h2>
+        <div className="mosaic-stage" ref={stageRef}>
+          <h2 className="bigname" ref={nameRef}>{tPlain('bigname')}</h2>
           <div className="mosaic" data-mosaic>
             {MOSAIC.map(([src, alt]) => <Img key={src} src={src} altKey={alt || undefined} />)}
           </div>
