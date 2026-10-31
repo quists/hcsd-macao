@@ -197,15 +197,14 @@
   .statement .echo-line { margin-top: 32px; color: var(--grey); }
 
   /* 3. Macao: the name set huge over its photographs */
-  /* overflow: clip (not hidden) so the pinned name can stick to the screen */
   .macao { overflow: clip; padding-top: clamp(48px, 6vw, 96px); }
-  /* Name and photographs side by side, centred as one group; the name is pinned mid-screen while the photographs scroll past */
-  .mosaic-stage { position: relative; display: flex; justify-content: center; align-items: flex-start; padding: 24px 0 72px; }
-  .mosaic { flex: 1 1 auto; min-width: 0; max-width: 960px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  /* Name and photographs side by side, centred as one group, scrolling together; script sizes both from the section's width */
+  .mosaic-stage { position: relative; display: flex; justify-content: center; align-items: center; padding: 24px 0 72px; }
+  .mosaic { flex: none; width: min(960px, 72%); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
   .mosaic img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 10px; }
   .mosaic img:nth-child(3n+2) { transform: translateY(48px); }
   /* The city's name runs vertically in every language (Chinese upright, Latin turned like a book spine); script sets its size to the stage */
-  .bigname { position: sticky; z-index: 2; flex: none; top: 8svh; margin: 0; writing-mode: vertical-rl; text-orientation: mixed; white-space: nowrap; font: 900 200px/0.92 var(--cjk); letter-spacing: 0.02em; color: #F2EFE9; pointer-events: none; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35), 0 10px 40px rgba(0, 0, 0, 0.45); } /* taste-skill-ignore: asked for, so the name reads over the photographs */
+  .bigname { position: relative; z-index: 2; flex: none; margin: 0; writing-mode: vertical-rl; text-orientation: mixed; white-space: nowrap; font: 900 200px/0.92 var(--cjk); letter-spacing: 0.02em; color: #F2EFE9; pointer-events: none; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35), 0 10px 40px rgba(0, 0, 0, 0.45); } /* taste-skill-ignore: asked for, so the name reads over the photographs */
   /* In English and Portuguese the name is set in Latin, one word across the photographs */
   html:not([lang="zh-Hant"]) .bigname { font-family: var(--display); font-weight: 600; line-height: 0.82; letter-spacing: -0.05em; }
   .macao .intro { margin-top: clamp(64px, 8vw, 120px); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px 64px; align-items: start; }

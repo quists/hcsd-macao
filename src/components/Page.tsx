@@ -61,38 +61,34 @@ const MOSAIC: [string, string][] = [
   ['img/lattice.jpg', ''], ['img/taipa.jpg', ''], ['img/felicidade-night.jpg', 'alt_felicidade'],
   ['img/coloane.jpg', ''], ['img/guia.jpg', ''], ['img/cunha.jpg', 'alt_cunha']
 ];
-/** Sets the city's name vertically and pins it mid-screen beside the photographs: 84% of the screen's height
- *  (never taller than the photographs, at most 42% of the section's width), overlapping their left edge by 40% of its width. */
+/** The city's name runs vertically beside the photographs and scrolls with them: its height is always 92% of the
+ *  photo grid's, and it overlaps the grid's left edge by 40% of its own width. The grid's width follows the section's
+ *  width alone (leaving room for the name), so the two never chase each other and nothing depends on the screen height. */
+const NAME_TO_GRID = 0.92;
+const OVERLAP = 0.4;
 function useVerticalFit(stage: React.RefObject<HTMLDivElement | null>, name: React.RefObject<HTMLHeadingElement | null>, key: string) {
   useLayoutEffect(() => {
     const st = stage.current, el = name.current; if (!st || !el) return;
-    const mosaic = st.querySelector<HTMLElement>('[data-mosaic]');
-    const apply = (size: number, w100: number, h100: number, screenH: number) => {
-      el.style.fontSize = size + 'px';
-      el.style.top = Math.max(0, (screenH - (h100 * size) / 100) / 2) + 'px'; // centred while pinned
-      el.style.marginRight = -((w100 * size) / 100) * 0.4 + 'px'; // overlaps the photographs
-    };
+    const grid = st.querySelector<HTMLElement>('[data-mosaic]'); if (!grid) return;
     const fit = () => {
       el.style.fontSize = '100px';
       const w100 = el.offsetWidth, h100 = el.offsetHeight; // layout sizes, unaffected by transforms or animation
       if (!w100 || !h100) return;
-      const screenH = document.documentElement.clientHeight;
-      let size = Math.max(48, Math.min(560, 100 * Math.min((screenH * 0.84) / h100, (st.clientWidth * 0.42) / w100)));
-      apply(size, w100, h100, screenH);
-      // Where the photographs are shorter than the screen (phones), the name keeps to their height.
-      const photosH = mosaic?.offsetHeight || 0;
-      if (photosH && (h100 * size) / 100 > photosH * 0.96) {
-        size = Math.max(48, (photosH * 0.96 * 100) / h100);
-        apply(size, w100, h100, screenH);
-      }
+      const S = st.clientWidth, r = w100 / h100, k = NAME_TO_GRID, gap = parseFloat(getComputedStyle(grid).columnGap) || 8;
+      // Grid of three 4:5 columns: height = 1.25 x (width - 2 gaps) + 2 gaps. Leave room for the part of the name outside it.
+      const ar = 1.25, outside = 1 - OVERLAP;
+      const gridW = Math.min(960, (S + outside * r * k * (ar * 2 * gap - 2 * gap)) / (1 + outside * r * k * ar));
+      grid.style.width = gridW + 'px';
+      const size = Math.max(48, Math.min(640, (k * grid.offsetHeight * 100) / h100, (S * 0.5 * 100) / w100));
+      el.style.fontSize = size + 'px';
+      el.style.marginRight = -((w100 * size) / 100) * OVERLAP + 'px';
     };
     fit();
     let lastW = st.clientWidth;
-    const ro = new ResizeObserver(() => { if (st.clientWidth !== lastW) { lastW = st.clientWidth; fit(); } }); // width only, so the name and the grid never chase each other
+    const ro = new ResizeObserver(() => { if (st.clientWidth !== lastW) { lastW = st.clientWidth; fit(); } });
     ro.observe(st);
-    window.addEventListener('resize', fit);
     document.fonts?.ready.then(fit);
-    return () => { ro.disconnect(); window.removeEventListener('resize', fit); };
+    return () => ro.disconnect();
   }, [stage, name, key]);
 }
 
@@ -315,8 +311,6 @@ export function Page() {
     gsap.utils.toArray<HTMLElement>('[data-rise]').forEach((el) => {
       gsap.from(el, { y: 32, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 90%', once: true } });
     });
-    // The mosaic drifts slower than the page, so the name seems to sit in front of the photographs.
-    gsap.fromTo('[data-mosaic]', { yPercent: 6 }, { yPercent: -6, ease: 'none', scrollTrigger: { trigger: '#macao', start: 'top bottom', end: 'bottom top', scrub: true } });
   }, { scope: root });
   return (
     <div ref={root}>
