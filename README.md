@@ -45,8 +45,8 @@ resolve to the HCSD palette.
 
 1. In the repository: Settings > Pages > Build and deployment > Source: **GitHub Actions**.
 2. Push to `main`. The site appears at `https://<owner>.github.io/<repo>/`.
-3. Custom domain: put the domain in `public/CNAME` (one line, e.g. `hcsdmacao.org`), push, and enter the same domain under Settings > Pages > Custom domain. At the domain's registrar add:
+3. Custom domain (hcsdmacao.org, DNS at Cloudflare): with an Actions deploy GitHub ignores a CNAME file; the domain is set under Settings > Pages > Custom domain. In Cloudflare > DNS > Records, with Proxy status "DNS only":
    - `A` records for `@`: `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
-   - `CNAME` for `www`: `<owner>.github.io`
+   - `CNAME` for `www`: `quists.github.io`
 
    Then tick "Enforce HTTPS" once GitHub has issued the certificate.
