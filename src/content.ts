@@ -11,7 +11,6 @@ export const T: Record<string, [string, string, string]> = {
     '遺產是建築，也是住在裡面的生活。保存得太完美，反而會失去讓它活着的東西。',
     'O património são os edifícios e as vidas que neles habitam. Preservá-lo de forma demasiado perfeita é perder o que o mantém vivo.'],
   bigname: ['Macao', '澳門', 'Macau'],
-  hero_side: ['Keep it alive', '讓它活下去', 'Mantê-lo vivo'],
   email_ph: ['[EMAIL ADDRESS]', '[電郵地址]', '[ENDEREÇO DE EMAIL]'],
   play_intro: ['Play intro', '播放片頭', 'Ver introdução'],
   join_us: ['Join us', '加入我們', 'Junte-se a nós'],

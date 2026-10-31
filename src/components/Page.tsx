@@ -15,13 +15,12 @@ function Img({ src, altKey, className }: { src: string; altKey?: string; classNa
   return <img className={className} src={src} alt={altKey ? tPlain(altKey) : ''} loading="lazy" decoding="async" />;
 }
 
-/* 1. Opening: a cobalt field, the line in Latin, the same line in Chinese running down the edge */
+/* 1. Opening: a cobalt field and the line, large */
 function Hero() {
   const { tPlain } = useLang();
   return (
     <section className="field field-cobalt hero on-color" id="top" aria-labelledby="hero-h">
       <a className="logo-link" href="#top" aria-label="HCSD Macao"><Logo variant="paper" /></a>
-      <p className="vertical" aria-hidden="true">{tPlain('hero_side')}</p>
       <div className="wrap bottom">
         <Tx k="hero_h" as="h1" id="hero-h" className="display" />
         <div className="row">

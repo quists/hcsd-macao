@@ -181,9 +181,7 @@
   .hero { min-height: 100vh; min-height: 100svh; padding: 0; display: flex; flex-direction: column; overflow: hidden; }
   .hero .logo-link { position: absolute; z-index: 3; top: calc(24px + env(safe-area-inset-top, 0px)); left: max(var(--gutter), env(safe-area-inset-left, 0px)); }
   .hero .logo { height: 44px; width: auto; }
-  .hero .vertical { position: absolute; z-index: 1; top: 50%; transform: translateY(-50%); right: max(var(--gutter), env(safe-area-inset-right, 0px)); writing-mode: vertical-rl; white-space: nowrap; font: 900 min(14svh, 14vw)/1 var(--cjk); letter-spacing: 0.04em; color: rgba(255, 255, 255, 0.16); user-select: none; }
   .hero .bottom { position: relative; z-index: 2; width: 100%; margin-top: auto; padding-bottom: clamp(40px, 6vw, 80px); display: flex; flex-direction: column; gap: 28px; }
-  html:not([lang="zh-Hant"]) .hero .vertical { font: 600 min(13svh, 12vw)/1 var(--display); letter-spacing: -0.04em; }
   .hero h1 { font-size: clamp(64px, 15vw, 240px); line-height: 0.86; max-width: 4.4em; }
   html[lang="zh-Hant"] .hero h1 { font-size: clamp(56px, 9vw, 150px); }
   .hero .row { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 24px 48px; }
