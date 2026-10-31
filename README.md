@@ -25,7 +25,7 @@ One page, told in full colour fields (after Sébastien Graf's portfolio) with Ma
 - `src/components/Page.tsx`: the page, section by section (opening, statement, Macao and 1844, what we do, projects, history, team, join, footer).
 - `src/components/Shell.tsx`: logo loader, top bar, menu.
 - `src/index.css`: tokens and styles. Tokens are also exposed under shadcn names (`--primary`, `--muted`, ...).
-- `public/img`, `public/media`: photographs, logos, logo animations.
+- `public/img`, `public/media`: photographs, logos, the intro film (`media/intro.mp4`; the original is in the GitHub release `intro-video`).
 
 ## Adding 21st.dev components
 

@@ -13,4 +13,4 @@ React + Vite + Tailwind, one page, three languages (English, Traditional Chinese
 
 - Each language version shows only its own language (the footer credits and the language switcher are the exceptions).
 - English and Portuguese use the English logo; Chinese uses the Chinese logo.
-- The logo intro plays in full on every visit, in a centred frame, with a Skip button.
+- The intro film (`public/media/intro.mp4`, 1080p H.264 without sound, encoded from the original in the GitHub release `intro-video`) plays in full on every visit, in a centred frame. Visitors can only Skip it: no controls, no pausing, no context menu, picture-in-picture, casting, fullscreen or download. If the browser refuses to autoplay, the logo shows with a Play intro button.

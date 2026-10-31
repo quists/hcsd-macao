@@ -5,11 +5,12 @@ import { reduceMotion, scroller } from '@/lib/motion';
 import { Logo } from './common';
 
 /* ---------- Loader: the logo animation, every visit ---------- */
-// The intro is the society's own short, skippable logo animation, played in full in a framed rectangle, even when the device asks for reduced motion.
+// The intro is the society's own film, played in full in a framed rectangle, even when the device asks for reduced motion.
+// Visitors can only skip it: no controls, no pausing, no menu, no picture-in-picture, casting, fullscreen or download.
 // If the browser refuses to autoplay (low-power modes do), the logo stays on screen with a Play button instead of vanishing.
 export function Loader({ onDone }: { onDone: () => void }) {
   const { lang, tPlain } = useLang();
-  const [startLang] = useState(lang); // the clip is chosen once, by the language the visit starts in
+  const [startLang] = useState(lang); // the fallback logo is chosen once, by the language the visit starts in
   const [leaving, setLeaving] = useState(false);
   const [blocked, setBlocked] = useState(false);
   const video = useRef<HTMLVideoElement>(null);
@@ -41,25 +42,45 @@ export function Loader({ onDone }: { onDone: () => void }) {
     document.documentElement.classList.add('is-loading');
     const v = video.current;
     if (v && v.readyState >= 4) start(); else later(start, 4000); // on a slow line, start anyway after 4s
-    later(finish, 30000); // a stalled download never holds the page for more than 30s
-    return () => { timers.current.forEach(clearTimeout); document.documentElement.classList.remove('is-loading'); };
+    later(finish, 30000); // a download that never starts never holds the page for more than 30s
+    // The intro cannot be paused: coming back to the tab resumes it, and media keys or the lock screen cannot stop it.
+    const onVisible = () => { if (!document.hidden && !done.current && started.current) play(); };
+    document.addEventListener('visibilitychange', onVisible);
+    const ms = 'mediaSession' in navigator ? navigator.mediaSession : null;
+    const keepPlaying = () => { if (!done.current) play(); };
+    const ignore = () => {};
+    try {
+      ms?.setActionHandler('pause', keepPlaying);
+      ms?.setActionHandler('stop', keepPlaying);
+      ms?.setActionHandler('seekbackward', ignore);
+      ms?.setActionHandler('seekforward', ignore);
+      ms?.setActionHandler('seekto', ignore);
+    } catch { /* some actions are not supported everywhere */ }
+    return () => {
+      timers.current.forEach(clearTimeout);
+      document.removeEventListener('visibilitychange', onVisible);
+      try { (['pause', 'stop', 'seekbackward', 'seekforward', 'seekto'] as MediaSessionAction[]).forEach((a) => ms?.setActionHandler(a, null)); } catch { /* ignore */ }
+      document.documentElement.classList.remove('is-loading');
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const key = startLang === 'zh' ? 'zh' : 'en';
   return (
     <div className={'loader' + (leaving ? ' is-done' : '') + (blocked ? ' is-blocked' : '')} role="dialog" aria-label="HCSD Macao">
-      <div className="loader-frame">
-      <video ref={video} src={`media/logo-${key}.mp4`} muted playsInline preload="auto" poster="media/logo-poster.jpg" aria-hidden="true"
+      <div className="loader-frame" onContextMenu={(e) => e.preventDefault()} onDoubleClick={(e) => e.preventDefault()}>
+      <video ref={video} src="media/intro.mp4" muted playsInline preload="auto" poster="media/intro-poster.jpg" aria-hidden="true" tabIndex={-1}
+        disablePictureInPicture disableRemotePlayback controlsList="nodownload nofullscreen noremoteplayback noplaybackrate"
+        onContextMenu={(e) => e.preventDefault()}
         onCanPlayThrough={start}
         onPlaying={(e) => {
-          // Safety net: the clip's own length plus a margin, so it is never cut short.
-          const d = e.currentTarget.duration;
+          // Safety net: the time left in the clip plus a margin, reset whenever it resumes, so it is never cut short.
+          const v = e.currentTarget, left = Number.isFinite(v.duration) ? v.duration - v.currentTime : 10;
           setBlocked(false); timers.current.forEach(clearTimeout); timers.current = [];
-          later(finish, (Number.isFinite(d) ? d : 6) * 1000 + 4000);
+          later(finish, left * 1000 + 8000);
         }}
         onPause={(e) => {
           // Paused by the browser before the end (a low-power mode, for instance): show the logo and the Play button instead of a blank screen.
-          if (done.current || e.currentTarget.ended) return;
+          if (done.current || e.currentTarget.ended || document.hidden) return; // a hidden tab resumes on return
           setBlocked(true); timers.current.forEach(clearTimeout); timers.current = []; later(finish, 6000);
         }}
         onEnded={() => window.setTimeout(finish, 700)} onError={() => window.setTimeout(finish, 400)} />
