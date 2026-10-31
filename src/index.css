@@ -104,7 +104,7 @@
   /* Type roles */
   .display { font-family: var(--display); font-weight: 600; font-size: var(--fs-display); line-height: 0.9; letter-spacing: -0.045em; text-wrap: balance; }
   .title { font-family: var(--display); font-weight: 600; font-size: var(--fs-title); line-height: 1; letter-spacing: -0.035em; text-wrap: balance; }
-  html[lang="zh-Hant"] .display, html[lang="zh-Hant"] .title { font-family: var(--cjk); font-weight: 900; letter-spacing: 0.02em; line-height: 1.15; }
+  html[lang="zh-Hant"] .display, html[lang="zh-Hant"] .title { font-family: var(--cjk); font-weight: 900; letter-spacing: 0.02em; line-height: 1.15; font-feature-settings: "palt"; }
   html[lang="zh-Hant"] .display { font-size: calc(var(--fs-display) * 0.78); }
   .lede { font-size: var(--fs-lede); line-height: 1.45; max-width: 40ch; }
   .small { font-size: var(--fs-small); }
@@ -183,7 +183,8 @@
   .hero .logo { height: 44px; width: auto; }
   .hero .bottom { position: relative; z-index: 2; width: 100%; margin-top: auto; padding-bottom: clamp(40px, 6vw, 80px); display: flex; flex-direction: column; gap: 28px; }
   .hero h1 { font-size: clamp(64px, 15vw, 240px); line-height: 0.86; max-width: 4.4em; }
-  html[lang="zh-Hant"] .hero h1 { font-size: clamp(56px, 9vw, 150px); }
+  /* Chinese glyphs fill a full square, so about 85% of the Latin size reads as the same size; "palt" closes the gap before 。 */
+  html[lang="zh-Hant"] .hero h1 { font-size: clamp(60px, 13vw, 205px); line-height: 1.08; max-width: 3.4em; font-feature-settings: "palt"; letter-spacing: 0.01em; }
   .hero .row { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 24px 48px; }
   .hero .lede { color: #EDEEFC; }
 
