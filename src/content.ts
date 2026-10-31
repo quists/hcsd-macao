@@ -10,6 +10,7 @@ export const T: Record<string, [string, string, string]> = {
   statement: ['Heritage is the buildings, and the lives inside them. Preserve it too perfectly and you lose what keeps it alive.',
     '遺產是建築，也是住在裡面的生活。保存得太完美，反而會失去讓它活着的東西。',
     'O património são os edifícios e as vidas que neles habitam. Preservá-lo de forma demasiado perfeita é perder o que o mantém vivo.'],
+  play_intro: ['Play intro', '播放片頭', 'Ver introdução'],
   join_us: ['Join us', '加入我們', 'Junte-se a nós'],
   what_h: ['What we do', '我們做甚麼', 'O que fazemos'],
   nav_macao: ['Macao', '澳門', 'Macau'],

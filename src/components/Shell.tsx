@@ -5,45 +5,61 @@ import { reduceMotion, scroller } from '@/lib/motion';
 import { Logo } from './common';
 
 /* ---------- Loader: the logo animation, every visit ---------- */
+// The intro is the society's own short, skippable logo animation, so it plays even when the device asks for reduced motion.
+// If the browser refuses to autoplay (low-power modes do), the logo stays on screen with a Play button instead of vanishing.
 export function Loader({ onDone }: { onDone: () => void }) {
   const { lang, tPlain } = useLang();
   const [startLang] = useState(lang); // the clip is chosen once, by the language the visit starts in
   const [leaving, setLeaving] = useState(false);
+  const [blocked, setBlocked] = useState(false);
   const video = useRef<HTMLVideoElement>(null);
   const done = useRef(false);
+  const timers = useRef<number[]>([]);
+  const later = (fn: () => void, ms: number) => { timers.current.push(window.setTimeout(fn, ms)); };
   const finish = () => {
     if (done.current) return;
     done.current = true;
     setLeaving(true);
     try { video.current?.pause(); } catch { /* already stopped */ }
-    window.setTimeout(onDone, reduceMotion ? 0 : 500);
+    window.setTimeout(onDone, 500);
+  };
+  const play = () => {
+    const v = video.current; if (!v) return;
+    v.muted = true; v.defaultMuted = true; v.setAttribute('muted', '');
+    const p = v.play();
+    if (p) p.then(() => setBlocked(false)).catch(() => { setBlocked(true); later(finish, 6000); });
   };
   useEffect(() => {
     document.documentElement.classList.add('is-loading');
-    const timers: number[] = [];
-    if (reduceMotion) { timers.push(window.setTimeout(finish, 1200)); }
-    else {
-      const v = video.current;
-      if (v) {
-        const p = v.play();
-        if (p) p.catch(() => timers.push(window.setTimeout(finish, 900)));
-      }
-      timers.push(window.setTimeout(finish, 9000));
-    }
-    return () => { timers.forEach(clearTimeout); document.documentElement.classList.remove('is-loading'); };
+    play();
+    later(finish, 20000); // a stalled download never holds the page for more than 20s
+    return () => { timers.current.forEach(clearTimeout); document.documentElement.classList.remove('is-loading'); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const key = startLang === 'zh' ? 'zh' : 'en';
   return (
-    <div className={'loader' + (leaving ? ' is-done' : '')} role="dialog" aria-label="HCSD Macao">
-      {reduceMotion
-        ? <img className="still" src={`img/logo-${key}-ink.png`} alt="" />
-        : <video ref={video} src={`media/logo-${key}.mp4`} muted playsInline preload="auto" poster="media/logo-poster.jpg" aria-hidden="true"
-            onEnded={() => window.setTimeout(finish, 500)} onError={() => window.setTimeout(finish, 400)} />}
-      <button type="button" className="pill pill-ink skip-anim" onClick={finish} aria-label={tPlain('skip')}>
-        <Tx k="skip" />
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 5l8 7-8 7M15 5v14" /></svg>
-      </button>
+    <div className={'loader' + (leaving ? ' is-done' : '') + (blocked ? ' is-blocked' : '')} role="dialog" aria-label="HCSD Macao">
+      <video ref={video} src={`media/logo-${key}.mp4`} muted autoPlay playsInline preload="auto" poster="media/logo-poster.jpg" aria-hidden="true"
+        onPlaying={() => { setBlocked(false); timers.current.forEach(clearTimeout); timers.current = []; later(finish, 9000); }}
+        onPause={(e) => {
+          // Paused by the browser before the end (a low-power mode, for instance): show the logo and the Play button instead of a blank screen.
+          if (done.current || e.currentTarget.ended) return;
+          setBlocked(true); timers.current.forEach(clearTimeout); timers.current = []; later(finish, 6000);
+        }}
+        onEnded={() => window.setTimeout(finish, 500)} onError={() => window.setTimeout(finish, 400)} />
+      {blocked && <img className="still" src={`img/logo-${key}-ink.png`} alt="" />}
+      <div className="loader-actions">
+        {blocked && (
+          <button type="button" className="pill pill-cobalt" onClick={() => { timers.current.forEach(clearTimeout); timers.current = []; later(finish, 20000); play(); }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l13 8-13 8z" fill="currentColor" /></svg>
+            <Tx k="play_intro" />
+          </button>
+        )}
+        <button type="button" className="pill pill-ink skip-anim" onClick={finish} aria-label={tPlain('skip')}>
+          <Tx k="skip" />
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 5l8 7-8 7M15 5v14" /></svg>
+        </button>
+      </div>
     </div>
   );
 }
