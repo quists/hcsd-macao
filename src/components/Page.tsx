@@ -265,7 +265,6 @@ function Footer() {
         <ul className="credits" aria-label="Photo credits">
           {CREDITS.map((c) => <li key={c[3]}><a href={c[3]} target="_blank" rel="noopener">{c[0]}</a> · {c[1]} · {c[2]}, via Wikimedia Commons</li>)}
         </ul>
-        <Tx k="credits_note" as="p" className="small meta" style={{ marginTop: 16 }} />
       </div>
     </footer>
   );
