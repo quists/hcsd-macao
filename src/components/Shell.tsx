@@ -161,7 +161,7 @@ export function Menu({ open, onClose }: { open: boolean; onClose: (focusBack: bo
       </ul>
       <div className="foot">
         <LangSwitch long />
-        <span>[EMAIL ADDRESS]</span>
+        <span>{tPlain('email_ph')}</span>
       </div>
       <button type="button" className="menu-btn close-btn" onClick={() => onClose(true)}>
         <Tx k="close" />

@@ -1,6 +1,6 @@
 import { useRef, useState, type PointerEvent as RPointerEvent } from 'react';
 import { ChevronsLeftRight } from 'lucide-react';
-import { Echo, Tx, useLang } from '@/i18n';
+import { Tx, useLang } from '@/i18n';
 import { CREDITS, L, TABS, TIMELINE } from '@/content';
 import { gsap, motionOn, useGSAP } from '@/lib/motion';
 import { ImageCompare, ImageCompareAfter, ImageCompareBefore, ImageCompareHandle, ImageCompareLabel } from '@/components/ui/image-compare';
@@ -17,11 +17,11 @@ function Img({ src, altKey, className }: { src: string; altKey?: string; classNa
 
 /* 1. Opening: a cobalt field, the line in Latin, the same line in Chinese running down the edge */
 function Hero() {
-  const { lang, tPlain } = useLang();
+  const { tPlain } = useLang();
   return (
     <section className="field field-cobalt hero on-color" id="top" aria-labelledby="hero-h">
       <a className="logo-link" href="#top" aria-label="HCSD Macao"><Logo variant="paper" /></a>
-      <p className="vertical" aria-hidden="true" lang={lang === 'zh' ? 'en' : 'zh-Hant'}>{lang === 'zh' ? 'Keep it alive' : '讓它活下去'}</p>
+      <p className="vertical" aria-hidden="true">{tPlain('hero_side')}</p>
       <div className="wrap bottom">
         <Tx k="hero_h" as="h1" id="hero-h" className="display" />
         <div className="row">
@@ -51,7 +51,6 @@ function Statement() {
     <section className="field field-paper statement" aria-label={t('mission_h')}>
       <div className="wrap">
         <p className="big" ref={ref}>{parts.map((w, i) => /^\s+$/.test(w) ? w : <span className="w" key={i}>{w}</span>)}</p>
-        <Echo k="s2_h" className="echo echo-line lede" />
       </div>
     </section>
   );
@@ -64,7 +63,7 @@ const MOSAIC: [string, string][] = [
   ['img/coloane.jpg', ''], ['img/guia.jpg', ''], ['img/cunha.jpg', 'alt_cunha']
 ];
 function Macao() {
-  const { tPlain } = useLang();
+  const { lang, tPlain } = useLang();
   const [pos, setPos] = useState(55);
   const year = Math.round(1844 + (182 * pos) / 100);
   const label = pos <= 1 ? '1844' : pos >= 99 ? tPlain('today') : String(year);
@@ -77,7 +76,7 @@ function Macao() {
     <section className="field field-night macao on-color" id="macao" aria-labelledby="macao-h">
       <div className="wrap">
         <div className="mosaic-stage">
-          <h2 className="bigname" lang="zh-Hant" aria-label="澳門 Macao">澳<br />門</h2>
+          <h2 className="bigname">{lang === 'zh' ? <>澳<br />門</> : tPlain('bigname')}</h2>
           <div className="mosaic" data-mosaic>
             {MOSAIC.map(([src, alt]) => <Img key={src} src={src} altKey={alt || undefined} />)}
           </div>
@@ -118,7 +117,7 @@ function What() {
           <div className="stage">
             <Img className="photo" src="img/mandarin-street.jpg" altKey="alt_street" />
             <div className="copy" data-rise>
-              <div className="head"><Tx k="ch3" as="h2" id="record-h" className="display" /><Echo k="ch3" as="span" className="echo" /></div>
+              <div className="head"><Tx k="ch3" as="h2" id="record-h" className="display" /></div>
               <Tx k="s6_p" as="p" className="text lede" />
             </div>
           </div>
@@ -128,7 +127,7 @@ function What() {
         <div className="wrap stage flip">
           <Img className="photo" src="img/vendor.jpg" altKey="alt_vendor" />
           <div className="copy" data-rise>
-            <div className="head"><Tx k="ch4" as="h2" id="listen-h" className="display" /><Echo k="ch4" as="span" className="echo" /></div>
+            <div className="head"><Tx k="ch4" as="h2" id="listen-h" className="display" /></div>
             <Tx k="s7_p" as="p" className="text lede" />
           </div>
         </div>
@@ -137,7 +136,7 @@ function What() {
         <div className="wrap stage">
           <Img className="photo" src="img/dense.jpg" altKey="alt_dense" />
           <div className="copy" data-rise>
-            <div className="head"><Tx k="ch5" as="h2" id="share-h" className="display" /><Echo k="ch5" as="span" className="echo" /></div>
+            <div className="head"><Tx k="ch5" as="h2" id="share-h" className="display" /></div>
             <ul className="ways">
               {[0, 1, 2].map((i) => <li key={i}><b>{tPlain(`w${i}`)}</b><span>{tPlain(`w${i}_d`)}</span></li>)}
             </ul>
@@ -244,7 +243,7 @@ function Join() {
         <div className="contact" id="contact">
           <div className="lines" data-rise>
             <Tx k="touch_h" as="h3" className="title" style={{ color: 'var(--white)', marginBottom: 8 }} />
-            <span className="email">[EMAIL ADDRESS]</span>
+            <span className="email">{tPlain('email_ph')}</span>
             <span className="socials"><a href="#contact">[Instagram]</a><a href="#contact">[Facebook]</a><a href="#contact">[WeChat]</a><a href="#contact">[Xiaohongshu]</a></span>
             <Tx k="address" as="span" />
           </div>

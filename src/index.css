@@ -183,7 +183,7 @@
   .hero .logo { height: 44px; width: auto; }
   .hero .vertical { position: absolute; z-index: 1; top: 50%; transform: translateY(-50%); right: max(var(--gutter), env(safe-area-inset-right, 0px)); writing-mode: vertical-rl; white-space: nowrap; font: 900 min(14svh, 14vw)/1 var(--cjk); letter-spacing: 0.04em; color: rgba(255, 255, 255, 0.16); user-select: none; }
   .hero .bottom { position: relative; z-index: 2; width: 100%; margin-top: auto; padding-bottom: clamp(40px, 6vw, 80px); display: flex; flex-direction: column; gap: 28px; }
-  .hero .vertical:lang(en) { font: 600 min(15svh, 13vw)/1 var(--display); letter-spacing: -0.04em; }
+  html:not([lang="zh-Hant"]) .hero .vertical { font: 600 min(13svh, 12vw)/1 var(--display); letter-spacing: -0.04em; }
   .hero h1 { font-size: clamp(64px, 15vw, 240px); line-height: 0.86; max-width: 4.4em; }
   html[lang="zh-Hant"] .hero h1 { font-size: clamp(56px, 9vw, 150px); }
   .hero .row { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 24px 48px; }
@@ -202,6 +202,8 @@
   .mosaic img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 10px; }
   .mosaic img:nth-child(3n+2) { transform: translateY(48px); }
   .bigname { position: absolute; letter-spacing: 0; z-index: 2; left: calc(var(--gutter) - 0.06em); top: 50%; transform: translateY(-46%); margin: 0; font: 900 clamp(150px, 29vw, 440px)/0.96 var(--cjk); color: #F2EFE9; pointer-events: none; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35), 0 10px 40px rgba(0, 0, 0, 0.45); } /* taste-skill-ignore: asked for, so the name reads over the photographs */
+  /* In English and Portuguese the name is set in Latin, one word across the photographs */
+  html:not([lang="zh-Hant"]) .bigname { font: 600 clamp(96px, 21vw, 340px)/0.85 var(--display); letter-spacing: -0.05em; }
   .macao .intro { margin-top: clamp(64px, 8vw, 120px); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px 64px; align-items: start; }
   .macao .intro h3 { grid-column: 1 / -1; max-width: 12em; }
   .macao .intro .text { color: var(--on-dark); }
