@@ -46,7 +46,7 @@ function Site() {
     <>
       <Tx k="skip_content" as="a" className="skip" href="#main" onClick={(e: React.MouseEvent) => { e.preventDefault(); document.getElementById('main')?.focus(); }} />
       {loading && <Loader onDone={() => { setLoading(false); refreshScroll(); }} />}
-      <TopBar menuOpen={menuOpen} onMenu={() => setMenuOpen(true)} />
+      <TopBar menuOpen={menuOpen} onMenu={() => setMenuOpen(true)} onClose={() => closeMenu(true)} />
       <Menu open={menuOpen} view={route.view} onClose={closeMenu} />
       <main id="main" tabIndex={-1} inert={loading || menuOpen ? true : undefined}>
         <Page view={route.view} />

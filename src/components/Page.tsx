@@ -6,6 +6,7 @@ import type { View } from '@/hooks/useRoute';
 import { gsap, motionOn, useGSAP } from '@/lib/motion';
 import { ImageCompare, ImageCompareAfter, ImageCompareBefore, ImageCompareHandle, ImageCompareLabel } from '@/components/ui/image-compare';
 import { Clover, Logo, NewsForm } from './common';
+import { AboutPage, HistoryPage, JoinPage, ProjectsPage } from './InfoPages';
 
 const Arrow = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
@@ -26,7 +27,7 @@ function Hero() {
         <Tx k="hero_h" as="h1" id="hero-h" className="display" />
         <div className="row">
           <Tx k="hero_lede" as="p" className="lede" />
-          <a className="pill pill-white" href="#join">{tPlain('join_us')}<Arrow /></a>
+          <a className="pill pill-white" href="#help">{tPlain('join_us')}<Arrow /></a>
         </div>
       </div>
     </section>
@@ -135,6 +136,7 @@ function Macao() {
           <Tx k="s4_h" as="h3" id="macao-h" className="display" />
           <Tx k="s4_p" as="p" className="text" />
         </div>
+        <ThenNow />
       </div>
     </section>
   );
@@ -170,40 +172,6 @@ function ThenNow() {
         <Tx k="s5_label" className="tag" aria-hidden="true" />
       </ImageCompare>
     </div>
-  );
-}
-
-/* The four pages, from the home page */
-const PAGES: [View, string, string][] = [['about', 'nav_about_us', 'about_d'], ['projects', 'nav_projects', 'projects_d'], ['history', 'nav_history', 'history_d'], ['join', 'nav_join', 'join_d']];
-function Explore() {
-  const { tPlain } = useLang();
-  return (
-    <section className="field field-paper explore" aria-labelledby="explore-h">
-      <div className="wrap">
-        <Tx k="explore_h" as="h2" id="explore-h" className="display" data-rise />
-        <ul className="explore-list">
-          {PAGES.map(([v, k, d]) => (
-            <li key={v} data-rise>
-              <a href={`#${v}`}><span className="t">{tPlain(k)}</span><span className="d">{tPlain(d)}</span><span className="go" aria-hidden="true"><Arrow /></span></a>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
-  );
-}
-
-/* The head of each page: its colour field, the logo home, the title */
-function PageHead({ field, titleKey, ledeKey, id }: { field: string; titleKey: string; ledeKey: string; id: string }) {
-  const light = field === 'field-paper' || field === 'field-stone' || field === 'field-white';
-  return (
-    <header className={`field ${field} page-head` + (light ? '' : ' on-color')}>
-      <a className="logo-link" href="#" aria-label="HCSD Macao"><Logo variant={light ? 'ink' : 'paper'} /></a>
-      <div className="wrap section-head" data-rise>
-        <Tx k={titleKey} as="h1" id={id} className="display" />
-        <Tx k={ledeKey} as="p" className="lede" />
-      </div>
-    </header>
   );
 }
 
@@ -250,20 +218,24 @@ function What() {
 /* 5. Projects */
 function Projects() {
   return (
-    <section className="field field-paper page-body" id="projects-body" aria-labelledby="projects-h">
+    <section className="field field-paper" id="work" aria-labelledby="projects-h">
       <div className="wrap">
+        <div className="section-head" data-rise>
+          <Tx k="nav_projects" as="h2" id="projects-h" className="display" />
+          <Tx k="proj_lede" as="p" className="lede" />
+        </div>
         <div className="projects-grid">
           <article className="project" data-rise>
             <Img src="img/coloane.jpg" />
             <div className="head"><Tx k="oral_h" as="h3" className="title" /><Tx k="planned_cap" className="tag" /></div>
             <Tx k="oral_p" as="p" className="text" />
-            <Tx k="oral_cta" as="a" className="pill pill-ink" href="#join" />
+            <Tx k="oral_cta" as="a" className="pill pill-ink" href="#help" />
           </article>
           <article className="project" data-rise>
             <Img src="img/cunha.jpg" altKey="alt_cunha" />
             <div className="head"><Tx k="food_h" as="h3" className="title" /><Tx k="planned_cap" className="tag" /></div>
             <Tx k="food_p" as="p" className="text" />
-            <Tx k="food_cta" as="a" className="pill pill-ink" href="#join" />
+            <Tx k="food_cta" as="a" className="pill pill-ink" href="#help" />
           </article>
         </div>
       </div>
@@ -275,9 +247,12 @@ function Projects() {
 function History() {
   const { lang } = useLang();
   return (
-    <section className="field field-night history page-body on-color" aria-labelledby="history-h">
+    <section className="field field-night history on-color" id="past" aria-labelledby="history-h">
       <div className="wrap">
-        <ThenNow />
+        <div className="section-head" data-rise>
+          <Tx k="brief_h" as="h2" id="history-h" className="display" />
+          <Tx k="brief_p" as="p" className="lede" />
+        </div>
         <ol className="timeline">
           {TIMELINE.map(([yr, txt]) => <li key={yr} data-rise><span className="yr">{yr}</span><span>{txt[L[lang]]}</span></li>)}
         </ol>
@@ -317,8 +292,12 @@ function Team() {
 function Join() {
   const { tPlain } = useLang();
   return (
-    <section className="field field-cobalt page-body on-color" aria-labelledby="join-h">
+    <section className="field field-cobalt on-color" id="help" aria-labelledby="join-h">
       <div className="wrap">
+        <div className="section-head" data-rise>
+          <Tx k="s10_h" as="h2" id="join-h" className="display" />
+          <Tx k="join_lede" as="p" className="lede" />
+        </div>
         <ul className="options">
           {TABS.map((d, i) => (
             <li key={d.title} data-rise>
@@ -343,6 +322,7 @@ function Join() {
   );
 }
 
+const FOOT_PAGES: [View, string][] = [['about', 'nav_about_us'], ['projects', 'nav_projects'], ['history', 'nav_history'], ['join', 'nav_join']];
 function Footer() {
   const { tPlain } = useLang();
   return (
@@ -351,7 +331,7 @@ function Footer() {
         <div className="top">
           <a href="#" aria-label="HCSD Macao"><Logo variant="paper" /></a>
           <nav className="foot-nav" aria-label="Pages">
-            {PAGES.map(([v, k]) => <a key={v} href={`#${v}`}>{tPlain(k)}</a>)}
+            {FOOT_PAGES.map(([v, k]) => <a key={v} href={`#${v}`}>{tPlain(k)}</a>)}
           </nav>
         </div>
         <div className="top">
@@ -382,11 +362,11 @@ export function Page({ view }: { view: View }) {
   const root = usePageMotion();
   return (
     <div ref={root} key={view}>
-      {view === 'home' && <><Hero /><Statement /><Macao /><Explore /></>}
-      {view === 'about' && <><PageHead field="field-night" titleKey="nav_about_us" ledeKey="about_lede" id="about-h" /><What /><Team /></>}
-      {view === 'projects' && <><PageHead field="field-paper" titleKey="nav_projects" ledeKey="proj_lede" id="projects-h" /><Projects /></>}
-      {view === 'history' && <><PageHead field="field-night" titleKey="brief_h" ledeKey="brief_p" id="history-h" /><History /></>}
-      {view === 'join' && <><PageHead field="field-cobalt" titleKey="s10_h" ledeKey="join_lede" id="join-h" /><Join /></>}
+      {view === 'home' && <><Hero /><Statement /><Macao /><What /><Projects /><History /><Team /><Join /></>}
+      {view === 'about' && <AboutPage />}
+      {view === 'projects' && <ProjectsPage />}
+      {view === 'history' && <HistoryPage />}
+      {view === 'join' && <JoinPage />}
       <Footer />
     </div>
   );

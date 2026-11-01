@@ -4,11 +4,11 @@ export type View = 'home' | 'about' | 'projects' | 'history' | 'join';
 export const VIEWS: View[] = ['home', 'about', 'projects', 'history', 'join'];
 
 // Anchors inside a page, and links from earlier versions of the site, land on the right page.
-const IN_VIEW: Record<string, [View, string | null]> = {
-  top: ['home', null], story: ['home', null], who: ['home', null], macao: ['home', 'macao'],
-  what: ['about', 'what'], record: ['about', 'what'], listen: ['about', 'what'], share: ['about', 'what'], team: ['about', 'team'], people: ['about', 'team'],
-  then: ['history', 'then'], help: ['join', null], contact: ['join', 'contact'], touch: ['join', 'contact']
-};
+// Sections of the home page, and links from earlier versions of the site, land on the home page.
+const HOME_ANCHORS = ['top', 'story', 'who', 'macao', 'then', 'what', 'record', 'listen', 'share', 'work', 'past', 'team', 'people', 'help', 'contact', 'touch'];
+const IN_VIEW: Record<string, [View, string | null]> = Object.fromEntries(
+  HOME_ANCHORS.map((id) => [id, ['home', ['top', 'story', 'who'].includes(id) ? null : id === 'touch' ? 'contact' : id === 'people' ? 'team' : ['record', 'listen', 'share'].includes(id) ? 'what' : id]])
+);
 
 export type Route = { view: View; target: string | null; n: number };
 

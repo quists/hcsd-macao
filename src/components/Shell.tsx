@@ -140,7 +140,7 @@ export function LangSwitch({ long = false, style }: { long?: boolean; style?: Re
 }
 
 /* ---------- Top bar: tucks away while you scroll down, comes back when you scroll up ---------- */
-export function TopBar({ menuOpen, onMenu }: { menuOpen: boolean; onMenu: () => void }) {
+export function TopBar({ menuOpen, onMenu, onClose }: { menuOpen: boolean; onMenu: () => void; onClose: () => void }) {
   const { tPlain } = useLang();
   const [tucked, setTucked] = useState(false);
   useEffect(() => {
@@ -156,12 +156,17 @@ export function TopBar({ menuOpen, onMenu }: { menuOpen: boolean; onMenu: () => 
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
   return (
-    <div className={'topbar' + (tucked && !menuOpen ? ' is-tucked' : '')} onFocusCapture={() => setTucked(false)}>
+    <div className={'topbar' + (tucked && !menuOpen ? ' is-tucked' : '') + (menuOpen ? ' over-menu' : '')} onFocusCapture={() => setTucked(false)}>
       <LangSwitch />
-      <button type="button" className="menu-btn" aria-expanded={menuOpen} aria-controls="menu" aria-label={tPlain('menu')} onClick={onMenu}>
-        <Tx k="menu" className="lbl" />
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M4 8h16M4 16h16" /></svg>
-      </button>
+      {menuOpen
+        ? <button type="button" className="menu-btn" aria-expanded="true" aria-controls="menu" onClick={onClose}>
+            <Tx k="close" className="lbl" />
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+          </button>
+        : <button type="button" className="menu-btn" aria-expanded="false" aria-controls="menu" aria-label={tPlain('menu')} onClick={onMenu}>
+            <Tx k="menu" className="lbl" />
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M4 8h16M4 16h16" /></svg>
+          </button>}
     </div>
   );
 }
@@ -187,7 +192,7 @@ export function Menu({ open, view, onClose }: { open: boolean; view: View; onClo
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose(true);
       if (e.key === 'Tab' && ref.current) {
-        const f = Array.from(ref.current.querySelectorAll<HTMLElement>('a, button')).filter((x) => x.offsetParent !== null);
+        const f = [...Array.from(document.querySelectorAll<HTMLElement>('.topbar button')), ...Array.from(ref.current.querySelectorAll<HTMLElement>('a, button'))].filter((x) => x.offsetParent !== null);
         if (!f.length) return;
         if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
         else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
@@ -200,19 +205,14 @@ export function Menu({ open, view, onClose }: { open: boolean; view: View; onClo
   return (
     <div className={'menu on-color' + (open ? '' : ' is-closing')} id="menu" ref={ref} role="dialog" aria-modal="true" aria-label={tPlain('menu')}>
       <a href="#" className="menu-home" aria-label={tPlain('home')} onClick={() => onClose(false)}><Logo variant="paper" /></a>
-      <ul>
-        {LINKS.map(([id, k], i) => (
-          <li key={id} style={{ ['--i' as string]: i }}><a href={`#${id}`} aria-current={view === id ? 'page' : undefined} onClick={() => onClose(false)}>{tPlain(k)}</a></li>
-        ))}
-      </ul>
-      <div className="foot">
-        <LangSwitch long />
-        <a href={`mailto:${tPlain('email_ph')}`}>{tPlain('email_ph')}</a>
+      <div className="menu-bottom">
+        <ul>
+          {LINKS.map(([id, k], i) => (
+            <li key={id} style={{ ['--i' as string]: i }}><a href={`#${id}`} aria-current={view === id ? 'page' : undefined} onClick={() => onClose(false)}>{tPlain(k)}</a></li>
+          ))}
+        </ul>
+        <a className="menu-mail" href={`mailto:${tPlain('email_ph')}`}>{tPlain('email_ph')}</a>
       </div>
-      <button type="button" className="menu-btn close-btn" onClick={() => onClose(true)}>
-        <Tx k="close" />
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
-      </button>
     </div>
   );
 }

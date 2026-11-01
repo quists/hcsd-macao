@@ -11,7 +11,8 @@ After any change to the site, update BOTH, every time:
 
 React + Vite + Tailwind, three languages (English, Traditional Chinese for Macao, European Portuguese). See README.md for the design system and where things are.
 
-- Pages (hash routes): home (opening, statement, Macao photos, links to the pages), `#about` (what we do + team), `#projects`, `#history` (Macao briefly, 1844 / today, timeline), `#join` (join, contact, newsletter). The menu lists the four pages; the logo goes home.
+- Home is the original one-page site (opening, statement, Macao photos + 1844 / today, Record/Listen/Share, projects, history, team, join). Four separate pages (hash routes `#about`, `#projects`, `#history`, `#join`) carry new, more in-depth content from `src/pagesContent.ts`, rendered by `src/components/InfoPages.tsx`. Home section anchors (#macao, #what, #work, #past, #team, #help, #contact) stay on home. The menu lists the four pages, bottom-left; the top bar (language pill, Menu/Close) stays in place over it.
+- Every photograph appears on one page only; credits are listed in the footer (`CREDITS` in `src/content.ts`).
 - Official email: info@hcsdmacao.org.
 - Each language version shows only its own language (the footer credits and the language switcher are the exceptions).
 - English and Portuguese use the English logo; Chinese uses the Chinese logo.

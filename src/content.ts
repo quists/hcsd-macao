@@ -230,7 +230,15 @@ export const CREDITS: [string, string, string, string][] = [
   ['Igreja de Sao Lazaro', 'unknown author', 'Public domain', 'https://commons.wikimedia.org/wiki/File:Igreja_de_Sao_Lazaro.jpg'],
   ['Capela de São Francisco Xavier (Macau) 02', 'Abasaa', 'Public domain', 'https://commons.wikimedia.org/wiki/File:Capela_de_S%C3%A3o_Francisco_Xavier_(Macau)_02.JPG'],
   ['Sam Kai Vui Kun Temple', 'Abasaa', 'Public domain', 'https://commons.wikimedia.org/wiki/File:Sam_Kai_Vui_Kun_Temple.JPG'],
-  ['Portuguese egg tart in Macau', 'Pauloleong2002', 'CC BY-SA 4.0', 'https://commons.wikimedia.org/wiki/File:Portuguese_egg_tart_in_Macau.jpg']
+  ['Portuguese egg tart in Macau', 'Pauloleong2002', 'CC BY-SA 4.0', 'https://commons.wikimedia.org/wiki/File:Portuguese_egg_tart_in_Macau.jpg'],
+  ['Map of Xiangshan County 1673', 'Shen Lianghan and Ouyang Yuwen', 'Public domain', 'https://commons.wikimedia.org/wiki/File:Map_of_Xiangshan_County_1673.jpg'],
+  ['Macao, The Harbour and Praya Grande', 'possibly Sunqua', 'Public domain', 'https://commons.wikimedia.org/wiki/File:Macao,_The_Harbour_and_Praya_Grande.jpg'],
+  ['East End of the Preya Grande, Macao', 'George Chinnery', 'CC0', 'https://commons.wikimedia.org/wiki/File:George_Chinnery_-_East_End_of_the_Preya_Grande,_Macao_-_B1977.14.4180_-_Yale_Center_for_British_Art.jpg'],
+  ['View of Macau', 'Lai Afong', 'Public domain', 'https://commons.wikimedia.org/wiki/File:Lai_Afong,_view_of_Macau,_1870s-1890s.jpg'],
+  ['Macao, China. Photograph by John Thomson, 1870 (Wellcome Collection)', 'John Thomson', 'CC BY 4.0', 'https://commons.wikimedia.org/wiki/File:Macao,_China._Photograph_by_John_Thomson,_1870_Wellcome_L0055554.jpg'],
+  ['Almond cookies being made in Macau', 'Mx. Granger', 'CC0', 'https://commons.wikimedia.org/wiki/File:Almond_cookies_being_made_in_Macau.jpg'],
+  ['Rua Sul Do Patane 2024', 'Tombus20032000', 'CC BY-SA 4.0', 'https://commons.wikimedia.org/wiki/File:Rua_Sul_Do_Patane_2024.jpg'],
+  ['Povoação de Cheok Ka 26-04-2023', 'LN9267', 'CC BY-SA 4.0', 'https://commons.wikimedia.org/wiki/File:Povoa%C3%A7%C3%A3o_de_Cheok_Ka_26-04-2023.jpg']
 ];
 export const WAYS = [
   { img: 'img/dense.jpg', alt: 'alt_dense', field: '#2A2A2E' },
