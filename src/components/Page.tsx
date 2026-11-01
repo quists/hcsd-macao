@@ -96,38 +96,87 @@ function solveLayout(S: number, ratio: number): Layout {
   return { cols: MAX_COLS, cell: (S - GAP_MAX * B(MAX_COLS)) / A(MAX_COLS), gap: GAP_MAX }; // very wide: larger photographs
 }
 
+/** The city's name, drawn from the actual letter shapes so the layout knows exactly where the ink is, in every browser.
+ *  Latin names run like a book spine (rotated clockwise); Chinese characters stand upright, stacked. */
+type Ink = { w: number; h: number; draw: (ctx: CanvasRenderingContext2D, scale: number) => void };
+function measureName(text: string, zh: boolean): Ink | null {
+  const ctx = document.createElement('canvas').getContext('2d'); if (!ctx) return null;
+  const F = 100;
+  if (zh) {
+    ctx.font = `900 ${F}px "Noto Serif TC"`;
+    const chars = Array.from(text), adv = F * 0.96;
+    const m = chars.map((c) => ctx.measureText(c));
+    const w = Math.max(...m.map((x) => x.actualBoundingBoxLeft + x.actualBoundingBoxRight));
+    const top = -m[0].actualBoundingBoxAscent, bottom = (chars.length - 1) * adv + m[m.length - 1].actualBoundingBoxDescent;
+    return { w, h: bottom - top, draw: (c, k) => {
+      c.font = `900 ${F * k}px "Noto Serif TC"`; c.textBaseline = 'alphabetic';
+      chars.forEach((ch, i) => { const x = m[i]; const cw = (x.actualBoundingBoxLeft + x.actualBoundingBoxRight) * k;
+        c.fillText(ch, (w * k - cw) / 2 + x.actualBoundingBoxLeft * k, (i * adv - top) * k); });
+    } };
+  }
+  ctx.font = `600 ${F}px "Funnel Display"`;
+  const spacing = -0.05 * F, chars = Array.from(text);
+  const adv = chars.map((c) => ctx.measureText(c).width);
+  const m = ctx.measureText(text);
+  const kern = m.width - adv.reduce((a, b) => a + b, 0); // the font's own kerning, spread across the gaps
+  const gapAdj = (spacing + kern / Math.max(1, chars.length - 1));
+  const first = ctx.measureText(chars[0]), last = ctx.measureText(chars[chars.length - 1]);
+  const run = adv.slice(0, -1).reduce((a, b) => a + b + gapAdj, 0);
+  const left = first.actualBoundingBoxLeft, right = run + last.actualBoundingBoxRight;
+  const asc = m.actualBoundingBoxAscent, desc = m.actualBoundingBoxDescent;
+  return { w: asc + desc, h: left + right, draw: (c, k) => {
+    c.font = `600 ${F * k}px "Funnel Display"`; c.textBaseline = 'alphabetic';
+    c.save(); c.translate((asc + desc) * k, 0); c.rotate(Math.PI / 2); // reads top to bottom
+    let x = left * k;
+    chars.forEach((ch, i) => { c.fillText(ch, x, asc * k); x += (adv[i] + gapAdj) * k; }); // baseline at the ascent: ink spans the box exactly
+    c.restore();
+  } };
+}
+
 function Macao() {
   const { lang, tPlain } = useLang();
   const stageRef = useRef<HTMLDivElement>(null);
   const nameRef = useRef<HTMLHeadingElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [layout, setLayout] = useState<Layout>({ cols: 3, cell: 300, gap: 8 });
+  const name = tPlain('bigname');
   useLayoutEffect(() => {
-    const st = stageRef.current, el = nameRef.current; if (!st || !el) return;
+    const st = stageRef.current, el = nameRef.current, cv = canvasRef.current; if (!st || !el || !cv) return;
+    const zh = lang === 'zh';
     const fit = () => {
-      el.style.fontSize = '100px';
-      const w100 = el.offsetWidth, h100 = el.offsetHeight; // layout sizes, unaffected by transforms or animation
-      if (!w100 || !h100) return;
-      const next = solveLayout(st.clientWidth, w100 / h100);
+      const S = st.clientWidth; const ink = measureName(name, zh); if (!S || !ink || !ink.w || !ink.h) return;
+      const next = solveLayout(S, ink.w / ink.h);
       const gridH = ROWS * 1.25 * next.cell + (ROWS - 1) * next.gap;
-      const size = (NAME_TO_GRID * gridH * 100) / h100;
-      el.style.fontSize = size + 'px';
-      el.style.marginRight = -((w100 * size) / 100) * OVERLAP + 'px';
+      const k = (NAME_TO_GRID * gridH) / ink.h;          // scale from the 100px measurement
+      const W = ink.w * k, H = ink.h * k, pad = Math.ceil(W * 0.35), dpr = Math.min(3, window.devicePixelRatio || 1);
+      el.style.width = W + 'px'; el.style.height = H + 'px'; el.style.marginRight = -W * OVERLAP + 'px';
+      cv.style.left = cv.style.top = -pad + 'px'; cv.style.width = W + 2 * pad + 'px'; cv.style.height = H + 2 * pad + 'px';
+      cv.width = Math.round((W + 2 * pad) * dpr); cv.height = Math.round((H + 2 * pad) * dpr);
+      const c = cv.getContext('2d'); if (!c) return;
+      c.setTransform(dpr, 0, 0, dpr, pad * dpr, pad * dpr); c.clearRect(-pad, -pad, W + 2 * pad, H + 2 * pad);
+      c.fillStyle = '#F2EFE9';
+      // the soft shadow that lets the name read over the photographs
+      c.shadowColor = 'rgba(0, 0, 0, 0.45)'; c.shadowBlur = 40 * dpr; c.shadowOffsetY = 10 * dpr; ink.draw(c, k);
+      c.shadowColor = 'rgba(0, 0, 0, 0.35)'; c.shadowBlur = 6 * dpr; c.shadowOffsetY = 2 * dpr; ink.draw(c, k);
       setLayout((prev) => (prev.cols === next.cols && Math.abs(prev.cell - next.cell) < 0.5 && Math.abs(prev.gap - next.gap) < 0.5 ? prev : next));
     };
     fit();
     let lastW = st.clientWidth;
     const ro = new ResizeObserver(() => { if (st.clientWidth !== lastW) { lastW = st.clientWidth; fit(); } });
     ro.observe(st);
-    document.fonts?.ready.then(fit);
-    return () => ro.disconnect();
-  }, [lang]);
+    window.addEventListener('resize', fit); // also catches zoom, which changes the pixel density
+    const fonts = document.fonts;
+    fonts?.addEventListener?.('loadingdone', fit);
+    Promise.all([fonts?.load('600 100px "Funnel Display"', name), fonts?.load('900 100px "Noto Serif TC"', '澳門')]).then(fit, fit);
+    return () => { ro.disconnect(); window.removeEventListener('resize', fit); fonts?.removeEventListener?.('loadingdone', fit); };
+  }, [lang, name]);
   const { cols, cell, gap } = layout;
   const gridStyle = { gridTemplateColumns: `repeat(${cols}, ${cell}px)`, gap: `${gap}px`, ['--shift' as string]: `${Math.round(cell * 0.14)}px` } as CSSProperties;
   return (
     <section className="field field-night macao on-color" id="macao" aria-labelledby="macao-h">
       <div className="wrap">
         <div className="mosaic-stage" ref={stageRef}>
-          <h2 className="bigname" ref={nameRef}>{tPlain('bigname')}</h2>
+          <h2 className="bigname" ref={nameRef}><span className="visually-hidden">{name}</span><canvas ref={canvasRef} aria-hidden="true" /></h2>
           <div className="mosaic" data-mosaic style={gridStyle}>
             {MOSAIC.slice(0, cols * ROWS).map(([src, alt], i) => <Img key={src} src={src} altKey={alt || undefined} className={(i % cols) % 2 === 1 ? 'low' : undefined} />)}
           </div>

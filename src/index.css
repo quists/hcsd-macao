@@ -202,7 +202,7 @@
   /* 3. Macao: the name set huge over its photographs */
   /* The photographs use the full width; the grid adds columns instead of growing taller */
   .macao .wrap { max-width: none; }
-  .macao { overflow: clip; padding-top: clamp(32px, 4vw, 64px); }
+  .macao { overflow: clip; padding-top: clamp(64px, 8vw, 128px); }
   /* Name and photographs side by side, centred as one group, scrolling together; script sizes both from the section's width */
   .mosaic-stage { position: relative; display: flex; justify-content: center; align-items: center; padding: 0 0 calc(var(--shift-room, 56px)); }
   .mosaic { flex: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
@@ -210,9 +210,11 @@
   /* Every other column sits a little lower */
   .mosaic img.low { transform: translateY(var(--shift, 40px)); }
   /* The city's name runs vertically in every language (Chinese upright, Latin turned like a book spine); script sets its size to the stage */
-  .bigname { position: relative; z-index: 2; flex: none; margin: 0; writing-mode: vertical-rl; text-orientation: mixed; white-space: nowrap; font: 900 200px/0.92 var(--cjk); letter-spacing: 0.02em; color: #F2EFE9; pointer-events: none; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35), 0 10px 40px rgba(0, 0, 0, 0.45); } /* taste-skill-ignore: asked for, so the name reads over the photographs */
+  /* The name is drawn on a canvas from its real letter shapes; script sizes it and the grid together */
+  .bigname { position: relative; z-index: 2; flex: none; margin: 0; pointer-events: none; }
+  .bigname canvas { position: absolute; display: block; }
+  .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   /* In English and Portuguese the name is set in Latin, one word across the photographs */
-  html:not([lang="zh-Hant"]) .bigname { font-family: var(--display); font-weight: 600; line-height: 0.82; letter-spacing: -0.05em; }
   .macao .intro { margin-top: clamp(64px, 8vw, 120px); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px 64px; align-items: start; }
   .macao .intro h3 { grid-column: 1 / -1; max-width: 12em; }
   .macao .intro .text { color: var(--on-dark); }
