@@ -115,20 +115,19 @@ function measureName(text: string, zh: boolean): Ink | null {
     } };
   }
   ctx.font = `600 ${F}px "Funnel Display"`;
-  const spacing = -0.05 * F, chars = Array.from(text);
-  const adv = chars.map((c) => ctx.measureText(c).width);
+  // Even spacing by eye: every pair of letters gets the same gap between their ink (0.05em), whatever their shapes.
+  const GAP = 0.05 * F, chars = Array.from(text);
+  const g = chars.map((c) => ctx.measureText(c));
+  const xs: number[] = [0];
+  for (let i = 1; i < chars.length; i++) xs.push(xs[i - 1] + g[i - 1].actualBoundingBoxRight + GAP + g[i].actualBoundingBoxLeft);
   const m = ctx.measureText(text);
-  const kern = m.width - adv.reduce((a, b) => a + b, 0); // the font's own kerning, spread across the gaps
-  const gapAdj = (spacing + kern / Math.max(1, chars.length - 1));
   const first = ctx.measureText(chars[0]), last = ctx.measureText(chars[chars.length - 1]);
-  const run = adv.slice(0, -1).reduce((a, b) => a + b + gapAdj, 0);
-  const left = first.actualBoundingBoxLeft, right = run + last.actualBoundingBoxRight;
+  const left = first.actualBoundingBoxLeft, right = xs[xs.length - 1] + last.actualBoundingBoxRight;
   const asc = m.actualBoundingBoxAscent, desc = m.actualBoundingBoxDescent;
   return { w: asc + desc, h: left + right, draw: (c, k) => {
     c.font = `600 ${F * k}px "Funnel Display"`; c.textBaseline = 'alphabetic';
     c.save(); c.translate((asc + desc) * k, 0); c.rotate(Math.PI / 2); // reads top to bottom
-    let x = left * k;
-    chars.forEach((ch, i) => { c.fillText(ch, x, asc * k); x += (adv[i] + gapAdj) * k; }); // baseline at the ascent: ink spans the box exactly
+    chars.forEach((ch, i) => c.fillText(ch, (left + xs[i]) * k, asc * k)); // baseline at the ascent: ink spans the box exactly
     c.restore();
   } };
 }
