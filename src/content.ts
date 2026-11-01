@@ -230,7 +230,7 @@ export const CREDITS: [string, string, string, string][] = [
   ['Igreja de Sao Lazaro', 'unknown author', 'Public domain', 'https://commons.wikimedia.org/wiki/File:Igreja_de_Sao_Lazaro.jpg'],
   ['Capela de São Francisco Xavier (Macau) 02', 'Abasaa', 'Public domain', 'https://commons.wikimedia.org/wiki/File:Capela_de_S%C3%A3o_Francisco_Xavier_(Macau)_02.JPG'],
   ['Sam Kai Vui Kun Temple', 'Abasaa', 'Public domain', 'https://commons.wikimedia.org/wiki/File:Sam_Kai_Vui_Kun_Temple.JPG'],
-  ['Portuguese egg tart in Macau', 'Pauloleong2002', 'CC BY-SA 4.0', 'https://commons.wikimedia.org/wiki/File:Portuguese_egg_tart_in_Macau.jpg'],
+  ['Moorish Barracks, 2023 (01)', 'Bahnfrend', 'CC BY-SA 4.0', 'https://commons.wikimedia.org/wiki/File:Moorish_Barracks,_2023_(01).jpg'],
   ['Map of Xiangshan County 1673', 'Shen Lianghan and Ouyang Yuwen', 'Public domain', 'https://commons.wikimedia.org/wiki/File:Map_of_Xiangshan_County_1673.jpg'],
   ['Macao, The Harbour and Praya Grande', 'possibly Sunqua', 'Public domain', 'https://commons.wikimedia.org/wiki/File:Macao,_The_Harbour_and_Praya_Grande.jpg'],
   ['East End of the Preya Grande, Macao', 'George Chinnery', 'CC0', 'https://commons.wikimedia.org/wiki/File:George_Chinnery_-_East_End_of_the_Preya_Grande,_Macao_-_B1977.14.4180_-_Yale_Center_for_British_Art.jpg'],

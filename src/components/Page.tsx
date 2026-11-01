@@ -63,7 +63,7 @@ function Statement() {
 const MOSAIC: [string, string][] = [
   ['img/senado.jpg', 'alt_senado'], ['img/ruins.jpg', ''], ['img/ama-gate.jpg', 'alt_amagate'],
   ['img/lattice.jpg', ''], ['img/m-sao-domingos.jpg', ''], ['img/felicidade-night.jpg', 'alt_felicidade'],
-  ['img/taipa.jpg', ''], ['img/guia.jpg', ''], ['img/m-egg-tart.jpg', ''],
+  ['img/taipa.jpg', ''], ['img/guia.jpg', ''], ['img/m-moorish-barracks.jpg', ''],
   ['img/m-lilau.jpg', ''], ['img/m-dom-pedro-v.jpg', ''], ['img/m-kun-iam.jpg', ''],
   ['img/m-na-tcha.jpg', ''], ['img/m-lou-kau.jpg', ''], ['img/m-sao-lazaro.jpg', ''],
   ['img/m-penha.jpg', ''], ['img/m-sam-kai-vui-kun.jpg', ''], ['img/m-coloane-chapel.jpg', '']

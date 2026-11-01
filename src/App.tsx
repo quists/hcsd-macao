@@ -6,9 +6,21 @@ import { gsap, motionOn, refreshScroll, scroller, scrollToEl, scrollToTop, Scrol
 import { Loader, Menu, TopBar } from './components/Shell';
 import { Page } from './components/Page';
 
+/** The intro plays when someone arrives, not when they reload or come back within the same visit (this browser tab). */
+function introWanted() {
+  try {
+    const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
+    if (nav && (nav.type === 'reload' || nav.type === 'back_forward')) return false;
+    if (sessionStorage.getItem('hcsd-intro-seen')) return false;
+    sessionStorage.setItem('hcsd-intro-seen', '1');
+  } catch { /* storage blocked: play it */ }
+  return true;
+}
+const PLAY_INTRO = introWanted(); // decided once, when the page loads
+
 function Site() {
   const { lang } = useLang();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(PLAY_INTRO);
   const [menuOpen, setMenuOpen] = useState(false);
   const route = useRoute();
 
