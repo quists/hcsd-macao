@@ -218,7 +218,19 @@ export const CREDITS: [string, string, string, string][] = [
   ['A-Ma Temple (Macau) 01', 'Abasaa', 'Public domain', 'https://commons.wikimedia.org/wiki/File:A-Ma_Temple_(Macau)_01.JPG'],
   ['A-Ma Temple Macao 1844 (1)', 'Jules Itier', 'Public domain', 'https://commons.wikimedia.org/wiki/File:A-Ma_Temple_Macao_1844_(1).jpg'],
   ['Macau street (6701746925)', 'Joybot', 'CC BY-SA 2.0', 'https://commons.wikimedia.org/wiki/File:Macau_street_(6701746925).jpg'],
-  ['Coloane Village 27-10-2023 (12)', 'LN9267', 'CC BY-SA 4.0', 'https://commons.wikimedia.org/wiki/File:Coloane_Village_27-10-2023(12).jpg']
+  ['Coloane Village 27-10-2023 (12)', 'LN9267', 'CC BY-SA 4.0', 'https://commons.wikimedia.org/wiki/File:Coloane_Village_27-10-2023(12).jpg'],
+  ['Largo do Lilau, 2023 (04)', 'Bahnfrend', 'CC BY-SA 4.0', 'https://commons.wikimedia.org/wiki/File:Largo_do_Lilau,_2023_(04).jpg'],
+  ['Templo Na Tcha, Macao, 2013-08-08, DD 02', 'Diego Delso', 'CC BY-SA 3.0', 'https://commons.wikimedia.org/wiki/File:Templo_Na_Tcha,_Macao,_2013-08-08,_DD_02.jpg'],
+  ['Door of Igreja de São Domingos, Macau - 20101117', 'Jacklee', 'CC BY-SA 3.0', 'https://commons.wikimedia.org/wiki/File:Door_of_Igreja_de_S%C3%A3o_Domingos,_Macau_-_20101117.jpg'],
+  ['St. Dominic’s Church, Macau (Ank lunar) 02', 'Ank Kumar', 'CC BY-SA 4.0', 'https://commons.wikimedia.org/wiki/File:St._Dominic%27s_Church,_Macau_(Ank_lunar)_02.jpg'],
+  ['Teatro Don Pedro V, Macao, 2013-08-08, DD 01', 'Diego Delso', 'CC BY-SA 3.0', 'https://commons.wikimedia.org/wiki/File:Teatro_Don_Pedro_V,_Macao,_2013-08-08,_DD_01.jpg'],
+  ['Lou Kau Mansion 08-07-2023(3)', 'LN9267', 'CC BY-SA 4.0', 'https://commons.wikimedia.org/wiki/File:Lou_Kau_Mansion_08-07-2023(3).jpg'],
+  ['Kun Iam Temple (Macau) 02', 'Abasaa', 'Public domain', 'https://commons.wikimedia.org/wiki/File:Kun_Iam_Temple_(Macau)_02.JPG'],
+  ['Penha Church - panoramio', 'lienyuan lee', 'CC BY 3.0', 'https://commons.wikimedia.org/wiki/File:Penha_Church_%E8%A5%BF%E6%9C%9B%E6%B4%8B%E8%81%96%E5%A0%82_-_panoramio.jpg'],
+  ['Igreja de Sao Lazaro', 'unknown author', 'Public domain', 'https://commons.wikimedia.org/wiki/File:Igreja_de_Sao_Lazaro.jpg'],
+  ['Capela de São Francisco Xavier (Macau) 02', 'Abasaa', 'Public domain', 'https://commons.wikimedia.org/wiki/File:Capela_de_S%C3%A3o_Francisco_Xavier_(Macau)_02.JPG'],
+  ['Sam Kai Vui Kun Temple', 'Abasaa', 'Public domain', 'https://commons.wikimedia.org/wiki/File:Sam_Kai_Vui_Kun_Temple.JPG'],
+  ['Portuguese egg tart in Macau', 'Pauloleong2002', 'CC BY-SA 4.0', 'https://commons.wikimedia.org/wiki/File:Portuguese_egg_tart_in_Macau.jpg']
 ];
 export const WAYS = [
   { img: 'img/dense.jpg', alt: 'alt_dense', field: '#2A2A2E' },

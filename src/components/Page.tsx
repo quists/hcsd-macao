@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState, type PointerEvent as RPointerEvent } from 'react';
+import { useLayoutEffect, useRef, useState, type CSSProperties, type PointerEvent as RPointerEvent } from 'react';
 import { ChevronsLeftRight } from 'lucide-react';
 import { Tx, useLang } from '@/i18n';
 import { CREDITS, L, TABS, TIMELINE } from '@/content';
@@ -57,39 +57,61 @@ function Statement() {
 }
 
 /* 3. Macao: its name set huge over its photographs, then the same gate in 1844 and today */
+// Photographs used nowhere else on the site. The first nine make the usual 3 x 3 grid; the rest are only added,
+// a column of three at a time, on screens too wide to fill by spacing the photographs further apart.
 const MOSAIC: [string, string][] = [
-  ['img/senado.jpg', 'alt_senado'], ['img/ruins.jpg', ''], ['img/ama-gate.jpg', 'alt_amagate'], ['img/mandarin-street.jpg', 'alt_street'],
-  ['img/lattice.jpg', ''], ['img/taipa.jpg', ''], ['img/felicidade-night.jpg', 'alt_felicidade'], ['img/vendor.jpg', 'alt_vendor'],
-  ['img/coloane.jpg', ''], ['img/guia.jpg', ''], ['img/cunha.jpg', 'alt_cunha'], ['img/dense.jpg', 'alt_dense']
+  ['img/senado.jpg', 'alt_senado'], ['img/ruins.jpg', ''], ['img/ama-gate.jpg', 'alt_amagate'],
+  ['img/lattice.jpg', ''], ['img/m-sao-domingos.jpg', ''], ['img/felicidade-night.jpg', 'alt_felicidade'],
+  ['img/taipa.jpg', ''], ['img/guia.jpg', ''], ['img/m-egg-tart.jpg', ''],
+  ['img/m-lilau.jpg', ''], ['img/m-dom-pedro-v.jpg', ''], ['img/m-kun-iam.jpg', ''],
+  ['img/m-na-tcha.jpg', ''], ['img/m-lou-kau.jpg', ''], ['img/m-sao-lazaro.jpg', ''],
+  ['img/m-penha.jpg', ''], ['img/m-sam-kai-vui-kun.jpg', ''], ['img/m-coloane-chapel.jpg', '']
 ];
-/** The city's name runs vertically beside the photographs and scrolls with them: its height is always 92% of the
- *  photo grid's, and it overlaps the grid's left edge by 40% of its own width. The grid takes three columns, four on
- *  wide sections and six on very wide ones (so it fills the width instead of growing taller), and its width follows the section's width alone (leaving room for the name), so the two never chase
- *  each other and nothing depends on the screen height. */
+const ROWS = 3;
+const MAX_COLS = MOSAIC.length / ROWS; // 6
+
+/** Lays out the Macao section so the name and the photographs fill the width between the page margins.
+ *  The name is always 92% as tall as the grid and overlaps it by 40% of its own width.
+ *  Order of preference: keep photographs at their natural size and widen or tighten the gaps between them;
+ *  on narrow screens shrink the photographs instead; only when even the widest gaps leave space, add a column.
+ *  Everything follows the section's width alone, never the screen height. */
 const NAME_TO_GRID = 0.92;
 const OVERLAP = 0.4;
-const GRID_MAX = 2600;
-function useVerticalFit(stage: React.RefObject<HTMLDivElement | null>, name: React.RefObject<HTMLHeadingElement | null>, key: string) {
+const CELL = 360;      // natural photo width
+const GAP_MIN = 8;
+const GAP_MAX = 56;
+type Layout = { cols: number; cell: number; gap: number };
+function solveLayout(S: number, ratio: number): Layout {
+  const q = (1 - OVERLAP) * ratio * NAME_TO_GRID;            // name width outside the grid, per unit of grid height
+  const A = (cols: number) => cols + q * ROWS * 1.25;           // width taken per unit of photo width
+  const B = (cols: number) => cols - 1 + q * (ROWS - 1);        // width taken per unit of gap
+  const gMin = S < 700 ? 6 : GAP_MIN;
+  for (let cols = 3; cols <= MAX_COLS; cols++) {
+    const gap = (S - CELL * A(cols)) / B(cols);
+    if (gap > GAP_MAX) continue;                                 // too much space even at the widest gaps: one more column
+    if (gap >= gMin) return { cols, cell: CELL, gap };
+    return { cols, cell: (S - gMin * B(cols)) / A(cols), gap: gMin }; // not enough room: smaller photographs
+  }
+  return { cols: MAX_COLS, cell: (S - GAP_MAX * B(MAX_COLS)) / A(MAX_COLS), gap: GAP_MAX }; // very wide: larger photographs
+}
+
+function Macao() {
+  const { lang, tPlain } = useLang();
+  const stageRef = useRef<HTMLDivElement>(null);
+  const nameRef = useRef<HTMLHeadingElement>(null);
+  const [layout, setLayout] = useState<Layout>({ cols: 3, cell: 300, gap: 8 });
   useLayoutEffect(() => {
-    const st = stage.current, el = name.current; if (!st || !el) return;
-    const grid = st.querySelector<HTMLElement>('[data-mosaic]'); if (!grid) return;
+    const st = stageRef.current, el = nameRef.current; if (!st || !el) return;
     const fit = () => {
       el.style.fontSize = '100px';
       const w100 = el.offsetWidth, h100 = el.offsetHeight; // layout sizes, unaffected by transforms or animation
       if (!w100 || !h100) return;
-      const S = st.clientWidth, n = grid.children.length;
-      const cols = S >= 1800 ? 6 : S >= 1000 ? 4 : 3, rows = Math.ceil(n / cols); // 12 photographs: 4x3, 3x4 or 6x2
-      grid.dataset.cols = String(cols);
-      grid.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
-      const g = parseFloat(getComputedStyle(grid).columnGap) || 8;
-      // Grid height for width W (4:5 photos): H = rows * 1.25 * (W - (cols-1)g) / cols + (rows-1)g.
-      // Width needed: W + (1 - OVERLAP) * nameWidth, with nameWidth = (w100/h100) * 0.92 * H. Solve for W.
-      const a = (rows * 1.25) / cols, b = (rows - 1) * g - a * (cols - 1) * g, c = (1 - OVERLAP) * (w100 / h100) * NAME_TO_GRID;
-      const gridW = Math.min(GRID_MAX, (S - c * b) / (1 + c * a));
-      grid.style.width = gridW + 'px';
-      const size = Math.max(48, Math.min(720, (NAME_TO_GRID * grid.offsetHeight * 100) / h100, (S * 0.5 * 100) / w100));
+      const next = solveLayout(st.clientWidth, w100 / h100);
+      const gridH = ROWS * 1.25 * next.cell + (ROWS - 1) * next.gap;
+      const size = (NAME_TO_GRID * gridH * 100) / h100;
       el.style.fontSize = size + 'px';
       el.style.marginRight = -((w100 * size) / 100) * OVERLAP + 'px';
+      setLayout((prev) => (prev.cols === next.cols && Math.abs(prev.cell - next.cell) < 0.5 && Math.abs(prev.gap - next.gap) < 0.5 ? prev : next));
     };
     fit();
     let lastW = st.clientWidth;
@@ -97,21 +119,16 @@ function useVerticalFit(stage: React.RefObject<HTMLDivElement | null>, name: Rea
     ro.observe(st);
     document.fonts?.ready.then(fit);
     return () => ro.disconnect();
-  }, [stage, name, key]);
-}
-
-function Macao() {
-  const { lang, tPlain } = useLang();
-  const stageRef = useRef<HTMLDivElement>(null);
-  const nameRef = useRef<HTMLHeadingElement>(null);
-  useVerticalFit(stageRef, nameRef, lang);
+  }, [lang]);
+  const { cols, cell, gap } = layout;
+  const gridStyle = { gridTemplateColumns: `repeat(${cols}, ${cell}px)`, gap: `${gap}px`, ['--shift' as string]: `${Math.round(cell * 0.14)}px` } as CSSProperties;
   return (
     <section className="field field-night macao on-color" id="macao" aria-labelledby="macao-h">
       <div className="wrap">
         <div className="mosaic-stage" ref={stageRef}>
           <h2 className="bigname" ref={nameRef}>{tPlain('bigname')}</h2>
-          <div className="mosaic" data-mosaic>
-            {MOSAIC.map(([src, alt]) => <Img key={src} src={src} altKey={alt || undefined} />)}
+          <div className="mosaic" data-mosaic style={gridStyle}>
+            {MOSAIC.slice(0, cols * ROWS).map(([src, alt], i) => <Img key={src} src={src} altKey={alt || undefined} className={(i % cols) % 2 === 1 ? 'low' : undefined} />)}
           </div>
         </div>
         <div className="intro" data-rise>
