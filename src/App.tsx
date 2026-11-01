@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import Lenis from 'lenis';
 import { LangProvider, Tx, useLang } from './i18n';
-import { useAnchors } from './hooks/useRoute';
-import { gsap, motionOn, refreshScroll, scroller, ScrollTrigger } from './lib/motion';
+import { useRoute } from './hooks/useRoute';
+import { gsap, motionOn, refreshScroll, scroller, scrollToEl, scrollToTop, ScrollTrigger } from './lib/motion';
 import { Loader, Menu, TopBar } from './components/Shell';
 import { Page } from './components/Page';
 
@@ -10,7 +10,16 @@ function Site() {
   const { lang } = useLang();
   const [loading, setLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
-  useAnchors(!loading);
+  const route = useRoute();
+
+  // Each page opens at its top; an anchor (#contact, #team...) scrolls to its place once the page is laid out.
+  useLayoutEffect(() => {
+    setMenuOpen(false);
+    scrollToTop();
+    if (!route.target) { refreshScroll(); return; }
+    const id = route.target;
+    requestAnimationFrame(() => { ScrollTrigger.refresh(); requestAnimationFrame(() => { const el = document.getElementById(id); if (el) scrollToEl(el, false); }); });
+  }, [route]);
 
   // Smooth scrolling, on GSAP's clock so scroll-linked moments and Lenis agree.
   useEffect(() => {
@@ -38,9 +47,9 @@ function Site() {
       <Tx k="skip_content" as="a" className="skip" href="#main" onClick={(e: React.MouseEvent) => { e.preventDefault(); document.getElementById('main')?.focus(); }} />
       {loading && <Loader onDone={() => { setLoading(false); refreshScroll(); }} />}
       <TopBar menuOpen={menuOpen} onMenu={() => setMenuOpen(true)} />
-      <Menu open={menuOpen} onClose={closeMenu} />
+      <Menu open={menuOpen} view={route.view} onClose={closeMenu} />
       <main id="main" tabIndex={-1} inert={loading || menuOpen ? true : undefined}>
-        <Page />
+        <Page view={route.view} />
       </main>
     </>
   );

@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { Tx, useLang } from '@/i18n';
 import type { Lang } from '@/content';
+import type { View } from '@/hooks/useRoute';
 import { reduceMotion, scroller } from '@/lib/motion';
 import { Logo } from './common';
 
 /* ---------- Loader: the logo animation, every visit ---------- */
 // The intro is the society's own film, played in full in a framed rectangle, even when the device asks for reduced motion.
-// Visitors can only skip it: no controls, no pausing, no menu, no picture-in-picture, casting, fullscreen or download.
+// Visitors can only skip it or turn its sound on: no controls, no pausing, no menu, no picture-in-picture, casting, fullscreen or download.
 // If the browser refuses to autoplay (low-power modes do), the logo stays on screen with a Play button instead of vanishing.
 export function Loader({ onDone }: { onDone: () => void }) {
   const { lang, tPlain } = useLang();
@@ -24,11 +25,26 @@ export function Loader({ onDone }: { onDone: () => void }) {
     try { video.current?.pause(); } catch { /* already stopped */ }
     window.setTimeout(onDone, 500);
   };
+  const [soundOn, setSoundOn] = useState(false);
+  const [playing, setPlaying] = useState(false); // shows the sound button once the film is running
+  // Try with sound first (some browsers allow it for returning visitors). If refused, play silently and offer Sound on.
   const play = () => {
     const v = video.current; if (!v) return;
-    v.muted = true; v.defaultMuted = true; v.setAttribute('muted', '');
+    v.muted = false;
+    const ok = () => { setBlocked(false); setPlaying(true); setSoundOn(!v.muted); };
+    const silent = () => {
+      v.muted = true;
+      const p2 = v.play();
+      if (p2) p2.then(ok).catch(() => { setBlocked(true); later(finish, 6000); });
+    };
     const p = v.play();
-    if (p) p.then(() => setBlocked(false)).catch(() => { setBlocked(true); later(finish, 6000); });
+    if (p) p.then(ok).catch(silent); else ok();
+  };
+  const toggleSound = () => {
+    const v = video.current; if (!v) return;
+    v.muted = !v.muted;
+    if (v.paused) v.play().catch(() => {});
+    setSoundOn(!v.muted);
   };
   // Start from the first frame once enough has loaded to play through without stalling, so the whole animation is seen.
   const started = useRef(false);
@@ -68,10 +84,11 @@ export function Loader({ onDone }: { onDone: () => void }) {
   return (
     <div className={'loader' + (leaving ? ' is-done' : '') + (blocked ? ' is-blocked' : '')} role="dialog" aria-label="HCSD Macao">
       <div className="loader-frame" onContextMenu={(e) => e.preventDefault()} onDoubleClick={(e) => e.preventDefault()}>
-      <video ref={video} src="media/intro.mp4" muted playsInline preload="auto" poster="media/intro-poster.jpg" aria-hidden="true" tabIndex={-1}
+      <video ref={video} src="media/intro.mp4" playsInline preload="auto" poster="media/intro-poster.jpg" aria-hidden="true" tabIndex={-1}
         disablePictureInPicture disableRemotePlayback controlsList="nodownload nofullscreen noremoteplayback noplaybackrate"
         onContextMenu={(e) => e.preventDefault()}
         onCanPlayThrough={start}
+        onVolumeChange={(e) => setSoundOn(!e.currentTarget.muted)}
         onPlaying={(e) => {
           // Safety net: the time left in the clip plus a margin, reset whenever it resumes, so it is never cut short.
           const v = e.currentTarget, left = Number.isFinite(v.duration) ? v.duration - v.currentTime : 10;
@@ -87,6 +104,14 @@ export function Loader({ onDone }: { onDone: () => void }) {
       {blocked && <img className="still" src={`img/logo-${key}-ink.png`} alt="" />}
       </div>
       <div className="loader-actions">
+        {!blocked && playing && (
+          <button type="button" className="pill pill-white sound-btn" aria-pressed={soundOn} onClick={toggleSound}>
+            {soundOn
+              ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" /><path d="M17 9l4 6M21 9l-4 6" /></svg>
+              : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" /><path d="M16.5 8.5a5 5 0 0 1 0 7M19.5 5.5a9 9 0 0 1 0 13" /></svg>}
+            <Tx k={soundOn ? 'sound_off' : 'sound_on'} />
+          </button>
+        )}
         {blocked && (
           <button type="button" className="pill pill-cobalt" onClick={() => { timers.current.forEach(clearTimeout); timers.current = []; later(finish, 20000); play(); }}>
             <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l13 8-13 8z" fill="currentColor" /></svg>
@@ -142,8 +167,8 @@ export function TopBar({ menuOpen, onMenu }: { menuOpen: boolean; onMenu: () => 
 }
 
 /* ---------- Menu: a cobalt field that floods out from the button ---------- */
-const LINKS: [string, string][] = [['top', 'nav_top'], ['macao', 'nav_macao'], ['what', 'nav_what'], ['projects', 'nav_projects'], ['history', 'nav_history'], ['team', 'nav_team'], ['join', 'nav_join']];
-export function Menu({ open, onClose }: { open: boolean; onClose: (focusBack: boolean) => void }) {
+const LINKS: [View, string][] = [['about', 'nav_about_us'], ['projects', 'nav_projects'], ['history', 'nav_history'], ['join', 'nav_join']];
+export function Menu({ open, view, onClose }: { open: boolean; view: View; onClose: (focusBack: boolean) => void }) {
   const { tPlain } = useLang();
   const ref = useRef<HTMLDivElement>(null);
   // Stay mounted for the closing animation.
@@ -174,15 +199,15 @@ export function Menu({ open, onClose }: { open: boolean; onClose: (focusBack: bo
   if (!shown) return null;
   return (
     <div className={'menu on-color' + (open ? '' : ' is-closing')} id="menu" ref={ref} role="dialog" aria-modal="true" aria-label={tPlain('menu')}>
-      <Logo variant="paper" />
+      <a href="#" className="menu-home" aria-label={tPlain('home')} onClick={() => onClose(false)}><Logo variant="paper" /></a>
       <ul>
         {LINKS.map(([id, k], i) => (
-          <li key={id} style={{ ['--i' as string]: i }}><a href={`#${id}`} onClick={() => onClose(false)}>{tPlain(k)}</a></li>
+          <li key={id} style={{ ['--i' as string]: i }}><a href={`#${id}`} aria-current={view === id ? 'page' : undefined} onClick={() => onClose(false)}>{tPlain(k)}</a></li>
         ))}
       </ul>
       <div className="foot">
         <LangSwitch long />
-        <span>{tPlain('email_ph')}</span>
+        <a href={`mailto:${tPlain('email_ph')}`}>{tPlain('email_ph')}</a>
       </div>
       <button type="button" className="menu-btn close-btn" onClick={() => onClose(true)}>
         <Tx k="close" />

@@ -22,7 +22,8 @@ One page, told in full colour fields (after Sébastien Graf's portfolio) with Ma
 ## Where things are
 
 - `src/content.ts`: every word in English, Traditional Chinese (Macao) and European Portuguese. Placeholders are in [brackets].
-- `src/components/Page.tsx`: the page, section by section (opening, statement, Macao and 1844, what we do, projects, history, team, join, footer).
+- `src/components/Page.tsx`: the five pages (home, about, projects, history, join) and their shared parts (page head, footer).
+- `src/hooks/useRoute.ts`: hash routing between pages; old anchors (#team, #contact, #then...) land on the right page.
 - `src/components/Shell.tsx`: logo loader, top bar, menu.
 - `src/index.css`: tokens and styles. Tokens are also exposed under shadcn names (`--primary`, `--muted`, ...).
 - `public/img`, `public/media`: photographs, logos, the intro film (`media/intro.mp4`; the original is in the GitHub release `intro-video`).

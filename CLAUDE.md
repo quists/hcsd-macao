@@ -9,8 +9,10 @@ After any change to the site, update BOTH, every time:
 
 ## Project
 
-React + Vite + Tailwind, one page, three languages (English, Traditional Chinese for Macao, European Portuguese). See README.md for the design system and where things are.
+React + Vite + Tailwind, three languages (English, Traditional Chinese for Macao, European Portuguese). See README.md for the design system and where things are.
 
+- Pages (hash routes): home (opening, statement, Macao photos, links to the pages), `#about` (what we do + team), `#projects`, `#history` (Macao briefly, 1844 / today, timeline), `#join` (join, contact, newsletter). The menu lists the four pages; the logo goes home.
+- Official email: info@hcsdmacao.org.
 - Each language version shows only its own language (the footer credits and the language switcher are the exceptions).
 - English and Portuguese use the English logo; Chinese uses the Chinese logo.
-- The intro film (`public/media/intro.mp4`, 1080p H.264 without sound, encoded from the original in the GitHub release `intro-video`) plays in full on every visit, in a centred frame. Visitors can only Skip it: no controls, no pausing, no context menu, picture-in-picture, casting, fullscreen or download. If the browser refuses to autoplay, the logo shows with a Play intro button.
+- The intro film (`public/media/intro.mp4`, 1080p H.264 with AAC sound, encoded from the original in the GitHub release `intro-video`) plays in full on every visit, in a centred frame. It tries to start with sound; browsers usually refuse until the visitor has clicked, so it then starts silently with a Sound on button. Visitors can only Skip it or toggle its sound: no controls, no pausing, no context menu, picture-in-picture, casting, fullscreen or download. If the browser refuses to autoplay at all, the logo shows with a Play intro button.
