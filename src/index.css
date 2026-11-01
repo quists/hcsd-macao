@@ -218,6 +218,7 @@
   .macao .intro { margin-top: clamp(64px, 8vw, 120px); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px 64px; align-items: start; }
   .macao .intro h3 { grid-column: 1 / -1; max-width: 12em; }
   .macao .intro .text { color: var(--on-dark); }
+  .macao .then { margin-top: var(--section); }
   .then { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 32px 56px; align-items: center; }
   .then .copy { display: flex; flex-direction: column; gap: 20px; }
   .then .copy .text { color: var(--on-dark); }
